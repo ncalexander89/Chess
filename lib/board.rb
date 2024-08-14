@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# board.rb
+
 class Board # rubocop:disable Style/Documentation
   def initialize # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @board_array = Array.new(8) { Array.new(8, ' ') } # First row at the top
@@ -24,10 +26,11 @@ class Board # rubocop:disable Style/Documentation
   end
 
   def board_display
-    puts '---------------------------------'
-    @board_array.reverse.each do |row|
-      puts "| #{row.join(' | ')} |" # Join converts to string and separates with '|'
-      puts '---------------------------------'
+    puts '  ---------------------------------'
+    @board_array.reverse.each_with_index do |row, index|
+      puts "#{8 - index} | #{row.join(' | ')} |" # Join converts to string and separates with '|'
+      puts '  ---------------------------------'
     end
+    puts '    A   B   C   D   E   F   G   H  '
   end
 end
