@@ -5,19 +5,19 @@
 require_relative '../lib/board'
 require_relative '../lib/game'
 
-describe Board do
-  subject(:board) { Board.new }
+# describe Board do
+#   subject(:board) { Board.new }
 
-  before do
-    allow(board).to receive(:puts) # Avoid actual printing to console
-  end
+#   before do
+#     allow(board).to receive(:puts) # Avoid actual printing to console
+#   end
 
-  context('When user enters valid input') do
-    it('Updates the board') do
-      expect(board)
-    end
-  end
-end
+#   context('When user enters valid input') do
+#     it('Updates the board') do
+#       expect(board)
+#     end
+#   end
+# end
 
 describe Game do
   subject(:game) { Game.new }
@@ -26,14 +26,13 @@ describe Game do
     allow(game).to receive(:puts) # Avoid actual printing to console
   end
 
-  context('When white to move pawn to invalid then valid position') do
+  context('When white moves pawn to invalid then valid position') do
     it('Updates the board') do
-      allow(game).to receive(:gets).and_return('p', '5')
-      game.instance_variable_set(:@turn, 1)
-      expect(game).to receive(:puts).with('Player 1 select your column')
-      expect(game).to receive(:puts).with('Enter a valid number')
-      expect(game.player_turn).to eq(5)
-      expect(game.instance_variable_get(:@selection)).to eq(5)
+      allow(game).to receive(:gets).and_return('p', 'pe4')
+      expect(game).to receive(:puts).with('White to move')
+      expect(game).to receive(:puts).with('Enter a valid move')
+      expect(game.white).to eq('pe4')
+      expect(game.instance_variable_get(:@move)).to eq('pe4')
     end
   end
 end
