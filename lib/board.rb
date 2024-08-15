@@ -3,6 +3,8 @@
 # board.rb
 
 class Board # rubocop:disable Style/Documentation
+  attr_accessor :board_array
+
   def initialize # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @board_array = Array.new(8) { Array.new(8, ' ') } # First row at the top
     @board_array[6] = Array.new(8, '♟') # Set entire second row to ♟
@@ -33,4 +35,6 @@ class Board # rubocop:disable Style/Documentation
     end
     puts '    A   B   C   D   E   F   G   H  '
   end
+
+  def board_update(move); end
 end
