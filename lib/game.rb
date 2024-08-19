@@ -5,12 +5,14 @@
 require_relative 'board'
 
 class Game # rubocop:disable Style/Documentation
-  attr_accessor :board, :turn, :move
+  attr_accessor :board, :turn, :move, :piece, :row
 
   def initialize
-    @board = Board.new
+    @board = Board.new(self)
     @turn = 1
     @move = nil
+    @piece = nil
+    @row = nil
   end
 
   def white
@@ -27,6 +29,12 @@ class Game # rubocop:disable Style/Documentation
     end
   end
 
+  def valid_move
+    p chess_piece
+    @kinight_moves = [[2, 1], [1, 2], [-1, -2], [-2, -1], [-2, 1], [-1, 2], [1, -2], [2, -1]]
+
+  end
+
   def black
     puts 'Black to move'
     loop do
@@ -41,13 +49,23 @@ class Game # rubocop:disable Style/Documentation
     end
   end
 
+  # turn into array?
   def chess_piece(move_piece)
-    piece = '♙' if move_piece == 'p'
-    piece = '♖' if move_piece == 'r'
-    piece = '♗' if move_piece == 'b'
-    piece = '♘' if move_piece == 'n'
-    piece = '♕' if move_piece == 'q'
-    piece = '♔' if move_piece == 'k'
+    if @turn.odd?
+      piece = '♙' if move_piece == 'p'
+      piece = '♖' if move_piece == 'r'
+      piece = '♗' if move_piece == 'b'
+      piece = '♘' if move_piece == 'n'
+      piece = '♕' if move_piece == 'q'
+      piece = '♔' if move_piece == 'k'
+    else
+      piece = '♟' if move_piece == 'p'
+      piece = '♜' if move_piece == 'r'
+      piece = '♝' if move_piece == 'b'
+      piece = '♞' if move_piece == 'n'
+      piece = '♛' if move_piece == 'q'
+      piece = '♚' if move_piece == 'k'
+    end
     piece
   end
 
@@ -63,35 +81,21 @@ class Game # rubocop:disable Style/Documentation
   end
 
   # pe4, pxe4, pde4, pdxe4
-  def move_translate(move) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-    return unless @turn.odd?
-    return true if move.include?('x')
-
-    col = coords(move[-2])
+  def move_translate(move)
+    # return true if move.include?('x')
+    @col = coords(move[-2])
     @row = (move[-1]).to_i - 1
     @piece = chess_piece(move[0])
-    # p @piece
-    @board.board_array.each_with_index do |row, row_index|
-      row.each_with_index do |cell, col_index|
-        if cell == @piece && col_index == col
-          position = [row_index, col_index]
-          p @board.board_array[@row][position[1]] = [@piece]
-          @board.board_array[position[0]][position[1]] = ' '
-        end
-      end
-    end
-
-
-    # p destination = move[-2..]
-    # p @board.board_array[1][4]
-
-    false
   end
+
+  # moves piece in same column
 
   def gameplay
     @board.board_display
     # loop
-    move_translate(white)
+    @turn.odd? ? move_translate(white) : move_translate(black)
+    # valid_move
+    @board.board_update
     @board.board_display
 
     # return if checkmate
