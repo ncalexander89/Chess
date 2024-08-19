@@ -35,4 +35,12 @@ describe Game do
       expect(game.instance_variable_get(:@move)).to eq('pe4')
     end
   end
+
+  context('When white enters valid move') do
+    it('Transalates the move into correct piece and coordinates') do
+      allow(game.move_translate(move)).to receive(:@move).and_return('pe4')
+      expect(game.instance_variable_get(:@col)).to eq(4)
+    end
+  end
+
 end
