@@ -44,19 +44,4 @@ class Board # rubocop:disable Style/Documentation
     @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = [@game_instance.piece]
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
-
-
-
-
-  #   @board_array.each_with_index do |row, row_index|
-  #     row.each_with_index do |cell, col_index|
-  #       if cell == @game_instance.piece 
-  #         #&& col_index == col (for pawn)
-  #         position = [row_index, col_index]
-  #         @board_array[@game_instance.row][position[1]] = [@game_instance.piece]
-  #         @board_array[position[0]][position[1]] = ' '
-  #       end
-  #     end
-  #   end
-  # end
 end

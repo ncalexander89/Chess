@@ -82,7 +82,7 @@ class Game # rubocop:disable Style/Documentation
 
   def valid_move
     @board.piece_positions[@piece].each do |pos|
-      @rules.knight_moves.each do |valid_move|
+      @rules.move_positions[@piece].each do |valid_move|
         if @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
           @current_pos = pos
           return true
