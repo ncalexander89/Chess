@@ -5,10 +5,11 @@
 require_relative 'board'
 
 class Rules # rubocop:disable Style/Documentation
-  attr_accessor :board
+  attr_accessor :board, :knight_moves
 
   def initialize
-    @board = Board.new
+    # @board = Board.new
+    @knight_moves = [[2, 1], [1, 2], [-1, -2], [-2, -1], [-2, 1], [-1, 2], [1, -2], [2, -1]]
   end
 
   def pawn(move)

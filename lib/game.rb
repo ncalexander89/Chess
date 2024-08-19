@@ -3,16 +3,21 @@
 # game.rb
 
 require_relative 'board'
+require_relative 'rules'
+require 'pry'
 
 class Game # rubocop:disable Style/Documentation
-  attr_accessor :board, :turn, :move, :piece, :row
+  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
 
   def initialize
     @board = Board.new(self)
+    @rules = Rules.new
     @turn = 1
     @move = nil
     @piece = nil
     @row = nil
+    @move_pos = nil
+    @current_pos = nil
   end
 
   def player_move
@@ -72,15 +77,29 @@ class Game # rubocop:disable Style/Documentation
     @col = coords(@move[-2])
     @row = (@move[-1]).to_i - 1
     @piece = chess_piece(@move[0])
-    @move_pos = [@col, @row]
+    @move_pos = [@row, @col]
+  end
+
+  def valid_move
+    @board.piece_positions[@piece].each do |pos|
+      @rules.knight_moves.each do |valid_move|
+        if @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
+          @current_pos = pos
+          return true
+        end
+      end
+    end
+    puts 'Enter a valid move'
+    false
   end
 
   def gameplay
     @board.board_display
-    # loop
-    player_move
-    move_translate
-    # valid_move
+    loop do
+      player_move
+      move_translate
+      break if valid_move
+    end
     @board.board_update
     @board.board_display
   end

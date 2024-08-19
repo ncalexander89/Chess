@@ -3,14 +3,14 @@
 # board.rb
 
 class Board # rubocop:disable Style/Documentation
-  attr_accessor :board_array, :game_instance
+  attr_accessor :board_array, :game_instance, :piece_positions
 
   def initialize(game_instance) # rubocop:disable Metrics/MethodLength
     @board_array = Array.new(8) { Array.new(8, ' ') } # First row at the top
     @game_instance = game_instance
 
     # Define positions for all pieces
-    piece_positions = {
+    @piece_positions = {
       '♙' => (0..7).map { |i| [1, i] }, # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
       '♟' => (0..7).map { |i| [6, i] }, # Black pawns
       '♖' => [[0, 0], [0, 7]], # White rooks
@@ -26,7 +26,7 @@ class Board # rubocop:disable Style/Documentation
     }
 
     # Place pieces on the board, loops over hash key value pair
-    piece_positions.each do |piece, positions|
+    @piece_positions.each do |piece, positions|
       positions.each { |row, col| @board_array[row][col] = piece }
     end
   end
@@ -41,15 +41,22 @@ class Board # rubocop:disable Style/Documentation
   end
 
   def board_update
-    @board_array.each_with_index do |row, row_index|
-      row.each_with_index do |cell, col_index|
-        if cell == @game_instance.piece 
-          #&& col_index == col (for pawn)
-          position = [row_index, col_index]
-          @board_array[@game_instance.row][position[1]] = [@game_instance.piece]
-          @board_array[position[0]][position[1]] = ' '
-        end
-      end
-    end
+    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = [@game_instance.piece]
+    @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
+
+
+
+
+  #   @board_array.each_with_index do |row, row_index|
+  #     row.each_with_index do |cell, col_index|
+  #       if cell == @game_instance.piece 
+  #         #&& col_index == col (for pawn)
+  #         position = [row_index, col_index]
+  #         @board_array[@game_instance.row][position[1]] = [@game_instance.piece]
+  #         @board_array[position[0]][position[1]] = ' '
+  #       end
+  #     end
+  #   end
+  # end
 end
