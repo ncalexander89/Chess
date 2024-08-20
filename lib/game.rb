@@ -80,17 +80,33 @@ class Game # rubocop:disable Style/Documentation
     @move_pos = [@row, @col]
   end
 
-  def valid_move
+  def valid_move # rubocop:disable Metrics/AbcSize
     @board.piece_positions[@piece].each do |pos|
       @rules.move_positions[@piece].each do |valid_move|
-        if @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
-          @current_pos = pos
-          return true
-        end
+        next unless @move_pos == [pos[0] + valid_move[0],
+                                  pos[1] + valid_move[1]] && @board.board_array[@move_pos[0]][@move_pos[1]] == ' '
+
+        @current_pos = pos
+        return true
       end
     end
     puts 'Enter a valid move'
     false
+  end
+
+  def collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
+    row = 0
+    col = 0
+    until row == steps[0] && col == steps[1]
+      row += 1 if row < steps[0]
+      col += 1 if col < steps[1]
+      if @board.board_array[@current_pos[0] + row][@current_pos[1] + col] != ' '
+        puts 'Collision!'
+        return false
+      end
+    end
+    true
   end
 
   def gameplay
@@ -98,7 +114,7 @@ class Game # rubocop:disable Style/Documentation
     loop do
       player_move
       move_translate
-      break if valid_move
+      break if valid_move && collision?
     end
     @board.board_update
     @board.board_display

@@ -10,8 +10,9 @@ class Rules # rubocop:disable Style/Documentation
   def initialize # rubocop:disable Metrics/MethodLength
     @move_positions = {
       '♙' => [[2, 0], [1, 0]], # White pawn moves
-      '♟' => [[2, 0], [1, 0]], # Black pawn moves
-      '♖' => [[0, 7], [0, -7], [7, 0], [-7, 0]], # White rook moves
+      '♟' => [[-2, 0], [-1, 0]], # Black pawn moves
+      # '♖' => [[0, 7], [0, -7], [7, 0], [-7, 0]], # White rook moves
+      '♖' => (1..7).map { |i| [i, 0] }, # White rook moves
       '♜' => [[0, 7], [0, -7], [7, 0], [-7, 0]], # Black rook moves
       '♗' => [[7, 7], [-7, -7], [7, -7], [-7, 7]], # White bishop moves
       '♝' => [[7, 7], [-7, -7], [7, -7], [-7, 7]], # Black bishop moves
@@ -24,3 +25,5 @@ class Rules # rubocop:disable Style/Documentation
     }
   end
 end
+
+# rook to a6 , cycles through each square in the A column, if next square is taken then cannot move forward
