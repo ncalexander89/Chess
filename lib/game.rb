@@ -6,7 +6,7 @@ require_relative 'board'
 require_relative 'rules'
 require 'pry'
 
-class Game # rubocop:disable Style/Documentation
+class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
 
   def initialize
@@ -109,14 +109,17 @@ class Game # rubocop:disable Style/Documentation
     true
   end
 
-  def gameplay
+  def gameplay # rubocop:disable Metrics/MethodLength
     @board.board_display
     loop do
-      player_move
-      move_translate
-      break if valid_move && collision?
+      loop do
+        player_move
+        move_translate
+        break if valid_move && collision?
+      end
+      @board.board_update
+      @board.board_display
+      @turn += 1
     end
-    @board.board_update
-    @board.board_display
   end
 end
