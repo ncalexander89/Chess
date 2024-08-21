@@ -83,7 +83,7 @@ describe Game do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    context 'when it is a valid move' do
+    context 'when there is no collision' do
       it 'sets correct piece position and returns true' do
         game.instance_variable_set(:@move_pos, [3, 4])
         expect(game.valid_move).to be true

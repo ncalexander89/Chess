@@ -15,10 +15,10 @@ class Board # rubocop:disable Style/Documentation
       '♟' => (0..7).map { |i| [6, i] }, # Black pawns
       '♖' => [[0, 0], [0, 7]], # White rooks
       '♜' => [[7, 0], [7, 7]], # Black rooks
-      '♗' => [[0, 1], [0, 6]], # White bishops
-      '♝' => [[7, 1], [7, 6]], # Black bishops
-      '♘' => [[0, 2], [0, 5]], # White knights
-      '♞' => [[7, 2], [7, 5]], # Black knights
+      '♗' => [[0, 2], [0, 5]], # White bishops
+      '♝' => [[7, 2], [7, 5]], # Black bishops
+      '♘' => [[0, 1], [0, 6]], # White knights
+      '♞' => [[7, 1], [7, 6]], # Black knights
       '♔' => [[0, 4]],         # White king
       '♚' => [[7, 4]],         # Black king
       '♕' => [[0, 3]],         # White queen
@@ -40,7 +40,8 @@ class Board # rubocop:disable Style/Documentation
     puts '    A   B   C   D   E   F   G   H  '
   end
 
-  def board_update
+  def board_update # rubocop:disable Metrics/AbcSize
+    @piece_positions[@game_instance.piece].map! { |sub| sub == @game_instance.current_pos ? @game_instance.move_pos : sub } # rubocop:disable Layout/LineLength
     @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = [@game_instance.piece]
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
