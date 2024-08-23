@@ -7,7 +7,7 @@ require_relative 'rules'
 require 'pry'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
-  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
+  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos, :white, :black
 
   def initialize
     @board = Board.new(self)
@@ -18,6 +18,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @row = nil
     @move_pos = nil
     @current_pos = nil
+    @white = ['♙', '♖', '♗', '♘', '♔', '♕']
+    @black = ['♟', '♜', '♝', '♞', '♚', '♛']
   end
 
   def player_move
@@ -80,13 +82,29 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @move_pos = [@row, @col]
   end
 
-  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-    @board.piece_positions[@piece].each do |pos| # **** this is calling piece positions
-      @rules.move_positions[@piece].each do |valid_move|
-        next unless @move_pos == [pos[0] + valid_move[0],
-                                  pos[1] + valid_move[1]] && @board.board_array[@move_pos[0]][@move_pos[1]] == ' '
+  def capture?
+    if @turn.odd?
+      true if @black.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
+    else
+      @turn.even?
+      true if @white.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
+    end
+  end
 
+  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+    @board.piece_positions[@piece].each do |pos| # this is calling piece positions
+      @rules.move_positions[@piece].each do |valid_move|
+        # If player input is a valid move
+        next unless @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
+        # Skips piece is pawn trying to double jump and not on first or 6th row
         next if @move[0] == 'p' && (pos[0] != 1 && pos[0] != 6) && (@move_pos[0] - pos[0]).abs == 2
+
+        if @move.include?('x') && capture?
+          @current_pos = pos
+          return true
+        end
+
+        next unless @board.board_array[@move_pos[0]][@move_pos[1]] == ' ' # if move pos is empty # rubocop:disable Layout/LineLength
 
         @current_pos = pos
         return true
@@ -95,11 +113,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter a valid move'
     false
   end
-
-  # def pawn
-  #       @board.piece_positions[@piece].each do |pos| # **** this is calling piece positions
-
-  # end
 
   def collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     p steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
@@ -119,6 +132,11 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
     true
   end
+
+  # def capture?
+  #   true if @turn.odd? && @black.include?(@board.board_array[@move_pos])
+  #   end
+  # end
 
   def gameplay # rubocop:disable Metrics/MethodLength
     @board.board_display
