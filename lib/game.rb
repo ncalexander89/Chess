@@ -104,7 +104,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           return true
         end
 
-        next unless @board.board_array[@move_pos[0]][@move_pos[1]] == ' ' # if move pos is empty # rubocop:disable Layout/LineLength
+        next unless @board.board_array[@move_pos[0]][@move_pos[1]] == ' ' # if move pos is empty
 
         @current_pos = pos
         return true
@@ -132,11 +132,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
     true
   end
-
-  # def capture?
-  #   true if @turn.odd? && @black.include?(@board.board_array[@move_pos])
-  #   end
-  # end
 
   def gameplay # rubocop:disable Metrics/MethodLength
     @board.board_display
