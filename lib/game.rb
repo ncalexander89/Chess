@@ -7,7 +7,7 @@ require_relative 'rules'
 require 'pry'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
-  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos, :white, :black
+  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
 
   def initialize
     @board = Board.new(self)
@@ -18,8 +18,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @row = nil
     @move_pos = nil
     @current_pos = nil
-    @white = ['♙', '♖', '♗', '♘', '♔', '♕']
-    @black = ['♟', '♜', '♝', '♞', '♚', '♛']
   end
 
   def player_move
@@ -31,12 +29,11 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         @move = input
         return @move
       else
-        puts 'Enter a valid move'
+        puts 'Enter a valid input'
       end
     end
   end
 
-  # hash mapping
   def chess_piece(move_piece) # rubocop:disable Metrics/MethodLength
     pieces = if @turn.odd?
                {
@@ -60,7 +57,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @piece = pieces[move_piece]
   end
 
-  # hash mapping
   def coords(move_col) # rubocop:disable Metrics/MethodLength
     column_map = {
       'a' => 0,
@@ -84,10 +80,10 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
   def capture?
     if @turn.odd?
-      true if @black.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
+      true if @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
     else
       @turn.even?
-      true if @white.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
+      true if @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
     end
   end
 
@@ -114,8 +110,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     false
   end
 
-  def collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    p steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
+  def no_collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
     row = 0
     col = 0
     until row == steps[0] && col == steps[1]
@@ -139,7 +135,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       loop do
         player_move
         move_translate
-        break if valid_move && collision?
+        break if valid_move && no_collision?
       end
       @board.board_update
       @board.board_display
