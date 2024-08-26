@@ -27,7 +27,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       # Input match single digit from 1 to 7 and available position
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
-        return @move
+        return @move #do we need to return move?
       else
         puts 'Enter a valid input'
       end
@@ -87,20 +87,47 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
   end
 
-  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+  # def pawn_double?
+  #   # @board.piece_positions[@piece].each do |pos| # this is calling piece positions
+  #   unless @move[0] == 'p' && (pos[0] == 1 || pos[0] == 6) && (@move_pos[0] - pos[0]).abs == 2
+  #     @current_pos = pos
+  #     true
+  #   end
+  # end
+  # 
+  # def capture
+  #   @board.piece_positions[@piece].each do |pos| # this is calling piece positions
+  #     @rules.move_positions[@piece].each do |valid_move|
+  #       next unless @turn.odd? && @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]] # rubocop:disable Layout/LineLength
+  #       @current_pos = pos
+  #       return true
+  #       puts 'Invalid capture'
+  #       false
+  #     end
+  #   end
+  # end
+
+  def valid_move # rubocop:disable Metrics/AbcSize
     @board.piece_positions[@piece].each do |pos| # this is calling piece positions
       @rules.move_positions[@piece].each do |valid_move|
         # If player input is a valid move
         next unless @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
+
         # Skips piece is pawn trying to double jump and not on first or 6th row
         next if @move[0] == 'p' && (pos[0] != 1 && pos[0] != 6) && (@move_pos[0] - pos[0]).abs == 2
 
-        if @move.include?('x') && capture?
-          @current_pos = pos
-          return true
-        end
+        # if @move.include?('x') && capture?
+        #   @current_pos = pos
+        #   return true
+        # end
 
-        next unless @board.board_array[@move_pos[0]][@move_pos[1]] == ' ' # if move pos is empty
+        # if move pos is empty and no capture
+        # if @board.board_array[@move_pos[0]][@move_pos[1]] == ' ' && !@move.include?('x')
+        #   @current_pos = pos
+        #   return true
+        # end
+
+        # if @turn.odd? && (@rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]]) && @move.include?('x')) # rubocop:disable Layout/LineLength
 
         @current_pos = pos
         return true
@@ -135,6 +162,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       loop do
         player_move
         move_translate
+        # pawn_double
         break if valid_move && no_collision?
       end
       @board.board_update
