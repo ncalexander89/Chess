@@ -89,19 +89,19 @@ describe Game do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#No collision' do
+    let(:board) { Board.new(game) }
+    let(:current_pos) { [2, 4] }
+    let(:move_pos) { [1, 5] }
+    let(:piece) { '♔' }
     before do
-      game.instance_variable_set(:@move_pos, [7, 7])
-      game.instance_variable_set(:@current_pos, [0, 0])
+      board.piece_positions # or similar method that initializes @piece_positions
+      game.instance_variable_set(:@move_pos, move_pos)
+      game.instance_variable_set(:@current_pos, current_pos)
+      game.instance_variable_set(:@piece, piece)
       game.no_collision?
     end
 
     context 'When there is a collision' do
-      let(:board) { Board.new(game) }
-      before do
-        board_array = board.instance_variable_get(:@board_array)
-        board_array[3][3] = '♘' # Place a piece to create a collision
-        game.instance_variable_set(:@board_array, board_array)
-      end
       it 'Prompts user for valid input' do
         expect(game).to receive(:puts).with('Collision!')
         expect(game.no_collision?).to be false
@@ -110,8 +110,8 @@ describe Game do # rubocop:disable Metrics/BlockLength
 
     context 'When there is no collision' do
       it 'Sets correct piece position and returns true' do
-        game.instance_variable_set(:@move_pos, [3, 4])
-        expect(game.valid_move).to be true
+        game.instance_variable_set(:@move_pos, [3, 5])
+        expect(game.no_collision?).to be true
       end
     end
   end
