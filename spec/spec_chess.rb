@@ -7,6 +7,7 @@ require_relative '../lib/game'
 
 describe Game do # rubocop:disable Metrics/BlockLength
   subject(:game) { Game.new }
+  let(:board) { Board.new(game) }
 
   before do
     allow(game).to receive(:puts) # Avoid actual printing to console
@@ -43,9 +44,9 @@ describe Game do # rubocop:disable Metrics/BlockLength
 
   describe '#Valid_move' do # rubocop:disable Metrics/BlockLength
     let(:board) { Board.new(game) }
-    before do
-      game.valid_move
-    end
+    # before do
+    #   # game.valid_move
+    # end
 
     context 'When player enters a piece with an invalid move' do
       before do
@@ -89,7 +90,7 @@ describe Game do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#No collision' do
-    let(:board) { Board.new(game) }
+    # let(:board) { Board.new(game) }
     let(:current_pos) { [0, 0] }
     let(:move_pos) { [5, 0] }
     let(:piece) { '♖' }
@@ -98,7 +99,7 @@ describe Game do # rubocop:disable Metrics/BlockLength
       game.instance_variable_set(:@move_pos, move_pos)
       game.instance_variable_set(:@current_pos, current_pos)
       game.instance_variable_set(:@piece, piece)
-      game.no_collision?
+      # game.no_collision?
     end
 
     context 'When there is a collision' do
@@ -114,7 +115,9 @@ describe Game do # rubocop:disable Metrics/BlockLength
         expect(game.no_collision?).to be true
       end
     end
+  end
 
+  describe '#Capture' do
     context 'When there is a capture' do
       let(:current_pos) { [2, 0] }
       let(:move_pos) { [6, 0] }
@@ -126,10 +129,11 @@ describe Game do # rubocop:disable Metrics/BlockLength
         game.instance_variable_set(:@current_pos, current_pos)
         game.instance_variable_set(:@piece, piece)
         game.instance_variable_set(:@move, move)
-        game.no_collision?
+        # game.no_collision?
+        # game.capture
       end
       it 'Piece gets captured' do
-        expect(game.no_collision?).to be true
+        expect(game.capture).to be true
       end
     end
   end

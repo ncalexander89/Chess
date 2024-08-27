@@ -108,14 +108,17 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       row -= 1 if row > steps[0]
       col += 1 if col < steps[1]
       col -= 1 if col > steps[1]
-
+      if @board.board_array[@current_pos[0] + row][@current_pos[1] + col] != ' '
+        puts 'Collision!'
+        return false
+      end
     end
     true
   end
 
   # binding pry
   def capture # rubocop:disable Metrics/AbcSize
-    return true unless @move.include('x')
+    return true unless @move.include?('x')
     return true if @turn.odd? && @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
 
     true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
@@ -129,9 +132,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         move_translate
         break if valid_move && no_collision? && capture
       end
+      @board.board_update
+      @board.board_display
+      @turn += 1
     end
-    @board.board_update
-    @board.board_display
-    @turn += 1
   end
 end
