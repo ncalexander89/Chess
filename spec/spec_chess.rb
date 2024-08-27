@@ -114,5 +114,23 @@ describe Game do # rubocop:disable Metrics/BlockLength
         expect(game.no_collision?).to be true
       end
     end
+
+    context 'When there is a capture' do
+      let(:current_pos) { [2, 0] }
+      let(:move_pos) { [6, 0] }
+      let(:piece) { '♖' }
+      let(:move) { 'rxa7' }
+      before do
+        board.piece_positions
+        game.instance_variable_set(:@move_pos, move_pos)
+        game.instance_variable_set(:@current_pos, current_pos)
+        game.instance_variable_set(:@piece, piece)
+        game.instance_variable_set(:@move, move)
+        game.no_collision?
+      end
+      it 'Piece gets captured' do
+        expect(game.no_collision?).to be true
+      end
+    end
   end
 end

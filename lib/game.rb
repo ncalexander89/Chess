@@ -27,7 +27,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       # Input match single digit from 1 to 7 and available position
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
-        return @move #do we need to return move?
+        return @move # do we need to return move?
       else
         puts 'Enter a valid input'
       end
@@ -78,15 +78,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @move_pos = [@row, @col]
   end
 
-  def capture?
-    if @turn.odd?
-      true if @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
-    else
-      @turn.even?
-      true if @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]])
-    end
-  end
-
   def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     @board.piece_positions[@piece].each do |pos| # this is calling piece positions
       @rules.move_positions[@piece].each do |valid_move|
@@ -105,35 +96,29 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def no_collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    if @board.board_array[@move_pos[0]][@move_pos[1]] == ' '
-      steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
-      row = 0
-      col = 0
-      until row == steps[0] && col == steps[1]
-        break if @move[0] == 'n'
+    return false if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
 
-        row += 1 if row < steps[0]
-        row -= 1 if row > steps[0]
-        col += 1 if col < steps[1]
-        col -= 1 if col > steps[1]
-        if @board.board_array[@current_pos[0] + row][@current_pos[1] + col] != ' '
-          puts 'Collision!'
-          return false
-        end
-      end
-      return true
-    end
-    # binding pry
-    # Capture
-    if @turn.odd? && (@rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0]) && @move.include?('x'))
-      return true
-    end
+    steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
+    row = 0
+    col = 0
+    until row == steps[0] && col == steps[1]
+      break if @move[0] == 'n'
 
-    if @turn.even? && (@rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0]) && @move.include?('x'))
-      return true
-    end
+      row += 1 if row < steps[0]
+      row -= 1 if row > steps[0]
+      col += 1 if col < steps[1]
+      col -= 1 if col > steps[1]
 
-    puts 'x needed to capture'
+    end
+    true
+  end
+
+  # binding pry
+  def capture # rubocop:disable Metrics/AbcSize
+    return true unless @move.include('x')
+    return true if @turn.odd? && @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
+
+    true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
   end
 
   def gameplay # rubocop:disable Metrics/MethodLength
@@ -142,11 +127,11 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       loop do
         player_move
         move_translate
-        break if valid_move && no_collision?
+        break if valid_move && no_collision? && capture
       end
-      @board.board_update
-      @board.board_display
-      @turn += 1
     end
+    @board.board_update
+    @board.board_display
+    @turn += 1
   end
 end
