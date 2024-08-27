@@ -101,13 +101,16 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
     row = 0
     col = 0
-    until row == steps[0] && col == steps[1]
+    loop do
       break if @move[0] == 'n'
 
       row += 1 if row < steps[0]
       row -= 1 if row > steps[0]
       col += 1 if col < steps[1]
       col -= 1 if col > steps[1]
+
+      break if row == steps[0] && col == steps[1]
+
       if @board.board_array[@current_pos[0] + row][@current_pos[1] + col] != ' '
         puts 'Collision!'
         return false
