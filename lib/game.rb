@@ -20,7 +20,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @row = nil
     @move_pos = nil
     @current_pos = nil
-    # @gameserializer = GameSerializer.new
   end
 
   def player_move # rubocop:disable Metrics/MethodLength
@@ -148,7 +147,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     if load_input == 'y'
       game_serializer = GameSerializer.new
       loaded_game = game_serializer.load_game('saved_game.yaml')
-      # @board.board_array = load_serial.board.board_array
       @turn = loaded_game.turn
       @board.piece_positions = loaded_game.board.piece_positions
       @board.piece_put
