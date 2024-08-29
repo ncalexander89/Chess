@@ -4,7 +4,9 @@
 
 require_relative 'board'
 require_relative 'rules'
-require 'pry'
+require_relative 'serial'
+# require 'pry'
+require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
@@ -18,13 +20,18 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @row = nil
     @move_pos = nil
     @current_pos = nil
+    # @gameserializer = GameSerializer.new
   end
 
-  def player_move
+  def player_move # rubocop:disable Metrics/MethodLength
     puts @turn.odd? ? 'White to move' : 'Black to move'
     loop do
       input = gets.chomp
       # Input match single digit from 1 to 7 and available position
+      if input == '$'
+        GameSerializer.new.save_game('saved_game.yaml', self) # calls class method save_game
+        puts "\nGame Saved\n"
+      end
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
         return @move # do we need to return move?
@@ -96,39 +103,58 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def no_collision? # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    return false if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
+    if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
+      puts 'x needed to capture'
+      return false
+    end
 
     steps = [@move_pos[0] - @current_pos[0], @move_pos[1] - @current_pos[1]]
     row = 0
     col = 0
     loop do
-      break if @move[0] == 'n'
+      return true if @move[0] == 'n'
 
       row += 1 if row < steps[0]
       row -= 1 if row > steps[0]
       col += 1 if col < steps[1]
       col -= 1 if col > steps[1]
 
-      break if row == steps[0] && col == steps[1]
+      return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[@current_pos[0] + row][@current_pos[1] + col] != ' '
         puts 'Collision!'
         return false
       end
     end
-    true
   end
 
-  # binding pry
   def capture # rubocop:disable Metrics/AbcSize
-    return true unless @move.include?('x')
+    return true unless @move.include?('x') # seems weird
     return true if @turn.odd? && @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
 
     true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
   end
 
-  def gameplay # rubocop:disable Metrics/MethodLength
+  def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     @board.board_display
+    puts 'Welcome to Chess!'
+    puts 'Load previous game Y/N?'
+    load_input = gets.chomp.downcase
+    until %w[y n].include?(load_input)
+      puts 'Please enter Y or N'
+      load_input = gets.chomp.downcase
+    end
+
+    if load_input == 'y'
+      game_serializer = GameSerializer.new
+      loaded_game = game_serializer.load_game('saved_game.yaml')
+      # @board.board_array = load_serial.board.board_array
+      @turn = loaded_game.turn
+      @board.piece_positions = loaded_game.board.piece_positions
+      @board.piece_put
+      @board.board_display
+    end
+    puts 'Enter $ anytime to save game'
     loop do
       loop do
         player_move

@@ -31,6 +31,12 @@ class Board # rubocop:disable Style/Documentation
     end
   end
 
+  def piece_put
+    @piece_positions.each do |piece, positions|
+      positions.each { |row, col| @board_array[row][col] = piece }
+    end
+  end
+
   def board_display
     puts '  ---------------------------------'
     @board_array.reverse.each_with_index do |row, index|
