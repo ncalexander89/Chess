@@ -135,6 +135,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    @board.piece_put
     @board.board_display
     puts 'Welcome to Chess!'
     puts 'Load previous game Y/N?'
@@ -147,8 +148,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     if load_input == 'y'
       game_serializer = GameSerializer.new
       loaded_game = game_serializer.load_game('saved_game.yaml')
-      @turn = loaded_game.turn
-      @board.piece_positions = loaded_game.board.piece_positions
+      @turn = loaded_game.turn # Loads saved game turn from data hash
+      @board.piece_positions = loaded_game.board.piece_positions # Loads saved piece positions from data hash
       @board.piece_put
       @board.board_display
     end
@@ -160,6 +161,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         break if valid_move && no_collision? && capture
       end
       @board.board_update
+      @board.piece_put
       @board.board_display
       @turn += 1
     end
