@@ -84,6 +84,7 @@ describe Game do # rubocop:disable Metrics/BlockLength
     let(:move_pos) { [5, 0] }
     before do
       board.piece_positions
+      board.piece_put
       game.instance_variable_set(:@move_pos, move_pos)
       game.instance_variable_set(:@current_pos, current_pos)
       game.instance_variable_set(:@piece, '♖')

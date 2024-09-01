@@ -161,7 +161,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         break if valid_move && no_collision? && capture
       end
       @board.board_update
-      @board.piece_put
       @board.board_display
       @turn += 1
     end

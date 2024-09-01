@@ -26,9 +26,7 @@ class Board # rubocop:disable Style/Documentation
     }
 
     # Place pieces on the board, loops over hash key value pair
-    # @piece_positions.each do |piece, positions|
-    #   positions.each { |row, col| @board_array[row][col] = piece }
-    # end
+    piece_put
   end
 
   def piece_put

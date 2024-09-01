@@ -30,10 +30,9 @@ class GameSerializer # rubocop:disable Style/Documentation
   # (or whatever data structure was serialized).
   def from_yaml(yaml_string)
     data = YAML.load(yaml_string) # Safe load for untrusted data, seems to cause issues # rubocop:disable Security/YAMLLoad
-    game = Game.new
+    game = Game.new # Intialises Game object
     game.turn = data[:turn] # New turn value from data hash
     game.board.piece_positions = data[:piece_positions] # New piece position from data hash
-    # game.board.game_instance = game
-    game
+    game # Returns game with newly assigned values to load_game
   end
 end
