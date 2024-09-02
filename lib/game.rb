@@ -101,12 +101,12 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     false
   end
 
-  def check?
+  def check? # rubocop:disable Metrics/AbcSize
     # If the piece that was just moved has a next move position where the king 
     # of the opposite colour is with no collisions
     @rules.move_positions[@piece].each do |valid_move|
       check_move = [@move_pos[0] + valid_move[0], @move_pos[1] + valid_move[1]]
-      if @turn.odd? && check_move == @board.piece_positions['♚'][0]
+      if (@turn.odd? && check_move == @board.piece_positions['♚'][0]) || (@turn.even? && check_move == @board.piece_positions['♔'][0])
         current_pos = @move_pos
         if no_collision?(check_move, current_pos)
           return true
@@ -118,7 +118,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # If trying to move to a space that is taken
-    unless @board.board_array[move_pos[0]][move_pos[1]] == '♚'
+    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚') || (@board.board_array[move_pos[0]][move_pos[1]] == '♔')
       if !@move.include?('x') && @board.board_array[move_pos[0]][move_pos[1]] != ' '
         puts 'x needed to capture'
         return false
@@ -139,7 +139,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        puts 'Collision!'
+        # puts 'Collision!'
         return false
       end
     end
