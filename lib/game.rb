@@ -167,6 +167,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       game_serializer = GameSerializer.new
       loaded_game = game_serializer.load_game('saved_game.yaml')
       @turn = loaded_game.turn # Loads saved game turn from data hash
+      @board.board_array = Array.new(8) { Array.new(8, ' ') }
       @board.piece_positions = loaded_game.board.piece_positions # Loads saved piece positions from data hash
       @board.piece_put
       @board.board_display
