@@ -5,12 +5,13 @@
 require_relative 'board'
 
 class Rules # rubocop:disable Style/Documentation
-  attr_accessor :move_positions, :white, :black
+  attr_accessor :move_positions, :white, :black, :pieces
 
   def initialize # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     # flat_map: This method is useful because it flattens the arrays
     # created inside the block into a single array, so there's no need to
     # concatenate multiple arrays manually.
+    @pieces = ['♙', '♖', '♗', '♘', '♔', '♕', '♟', '♜', '♝', '♞', '♚', '♛']
     @white = ['♙', '♖', '♗', '♘', '♔', '♕']
     @black = ['♟', '♜', '♝', '♞', '♚', '♛']
     @move_positions = {
