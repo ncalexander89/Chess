@@ -102,8 +102,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def check? # rubocop:disable Metrics/AbcSize
-    # If the piece that was just moved has a next move position where the king 
-    # of the opposite colour is with no collisions
+  # should check all pieces 
     @rules.move_positions[@piece].each do |valid_move|
       check_move = [@move_pos[0] + valid_move[0], @move_pos[1] + valid_move[1]]
       if (@turn.odd? && check_move == @board.piece_positions['♚'][0]) || (@turn.even? && check_move == @board.piece_positions['♔'][0])
@@ -167,7 +166,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       game_serializer = GameSerializer.new
       loaded_game = game_serializer.load_game('saved_game.yaml')
       @turn = loaded_game.turn # Loads saved game turn from data hash
-      @board.board_array = Array.new(8) { Array.new(8, ' ') }
+      @board.board_array = Array.new(8) { Array.new(8, ' ') } # Clears board_array so loaded pieces aren't loaded on top
       @board.piece_positions = loaded_game.board.piece_positions # Loads saved piece positions from data hash
       @board.piece_put
       @board.board_display
