@@ -120,10 +120,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       @board.piece_positions[piece].each do |pos| # this is calling piece positions
         @rules.move_positions[piece].each do |valid_move|
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
-          if (@turn.odd? && check_move == @board.piece_positions['♚'][0] && @rules.white.include?('piece')) || (@turn.even? && check_move == @board.piece_positions['♔'][0] && @rules.black.include?('piece'))
+          if (@turn.odd? && check_move == @board.piece_positions['♚'][0]) || (@turn.even? && check_move == @board.piece_positions['♔'][0])
             if no_collision?(check_move, pos)
-              p check_move
-              p pos
               return true
             end
           end
@@ -132,6 +130,24 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
     false
   end
+
+  # def check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  #   @rules.pieces.each do |piece|
+  #     @board.piece_positions[piece].each do |pos| # this is calling piece positions
+  #       @rules.move_positions[piece].each do |valid_move|
+  #         check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
+  #         if (@turn.odd? && check_move == @board.piece_positions['♚'][0] && @rules.white.include?('piece')) || (@turn.even? && check_move == @board.piece_positions['♔'][0] && @rules.black.include?('piece'))
+  #           if no_collision?(check_move, pos)
+  #             p check_move
+  #             p pos
+  #             return true
+  #           end
+  #         end
+  #       end
+  #     end
+  #   end
+  #   false
+  # end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # If trying to move to a space that is taken
