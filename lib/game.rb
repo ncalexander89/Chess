@@ -9,7 +9,7 @@ require_relative 'serial'
 require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
-  attr_accessor :board, :turn, :move, :piece, :row, :rules, :move_pos, :current_pos
+  attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos
 
   def initialize
     @board = Board.new(self)
@@ -17,7 +17,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @turn = 1
     @move = nil
     @piece = nil
-    @row = nil
     @move_pos = nil
     @current_pos = nil
   end
@@ -33,7 +32,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
-        return @move # do we need to return move?
+        return true # do we need to return move?
       else
         puts 'Enter a valid input'
       end
@@ -78,13 +77,13 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def move_translate
-    @col = coords(@move[-2])
-    @row = (@move[-1]).to_i - 1
+    col = coords(@move[-2])
+    row = (@move[-1]).to_i - 1
     @piece = chess_piece(@move[0])
-    @move_pos = [@row, @col]
+    @move_pos = [row, col]
   end
 
-  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     @board.piece_positions[@piece].each do |pos| # this is calling piece positions
       @rules.move_positions[@piece].each do |valid_move|
         # If player input is a valid move
@@ -94,7 +93,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         next if @move[0] == 'p' && (pos[0] != 1 && pos[0] != 6) && (@move_pos[0] - pos[0]).abs == 2
 
         @current_pos = pos
-        return true
+        return true if no_collision?(@move_pos, @current_pos)
       end
     end
     puts 'Enter a valid move'
@@ -172,7 +171,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        # puts 'Collision!'
+        puts 'Collision!'
         return false
       end
     end
@@ -210,11 +209,11 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       loop do
         player_move
         move_translate
-        break if valid_move && no_collision?(@move_pos, @current_pos) && capture
+        break if valid_move && capture
       end
       @board.board_update
       @board.board_display
-      puts 'Check!' if check?
+      # puts 'Check!' if check?
       @turn += 1
     end
   end
