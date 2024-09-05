@@ -137,8 +137,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
           if (@turn.odd? && check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece)) || (@turn.even? && check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece))
             if no_collision?(check_move, pos)
-              p check_move
-              p pos
               return true
             end
           end
@@ -150,8 +148,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # If trying to move to a space that is taken
+    # WHAT IS THIS MEANT TO DO????
     unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚') || (@board.board_array[move_pos[0]][move_pos[1]] == '♔')
-      if !@move.include?('x') && @board.board_array[move_pos[0]][move_pos[1]] != ' '
+      if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
         puts 'x needed to capture'
         return false
       end
@@ -171,7 +170,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        puts 'Collision!'
+        # puts 'Collision!'
         return false
       end
     end
@@ -213,7 +212,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
       @board.board_update
       @board.board_display
-      # puts 'Check!' if check?
+      puts 'Check!' if check?
       @turn += 1
     end
   end
