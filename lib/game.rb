@@ -136,7 +136,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # If trying to move to a space that is taken
     # Check method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
-    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚') || (@board.board_array[move_pos[0]][move_pos[1]] == '♔')
+    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚' && @turn.odd?) || (@board.board_array[move_pos[0]][move_pos[1]] == '♔' && @turn.even?)
       if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
         p @move_pos
         puts 'x needed to capture'
