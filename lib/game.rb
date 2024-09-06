@@ -5,7 +5,7 @@
 require_relative 'board'
 require_relative 'rules'
 require_relative 'serial'
-# require 'pry'
+require 'pry'
 require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
@@ -109,19 +109,16 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       @board.piece_positions[piece].each do |pos| # this is calling piece positions
         @rules.move_positions[piece].each do |valid_move|
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
-          # @check_black_king = check_move if check_move == (@board.piece_positions['♚'][0] && @rules.white.include?(piece))
-          # @check_white_king = check_move if check_move == (@board.piece_positions['♔'][0] && @rules.black.include?(piece))
-          if check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece) && @turn.odd?
+          if check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece)
+            p check_move
+            p pos
             if no_collision?(check_move, pos)
-              # @in_check = true
-              # @check_move = check_move
               @check_black_king = true
+              p @check_black_king
               return true
             end
-          elsif check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece) && @turn.even?
+          elsif check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece)
             if no_collision?(check_move, pos)
-              @in_check = true
-              # @check_move = check_move
               @check_white_king = true
               return true
             end
@@ -129,16 +126,15 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         end
       end
     end
-    # @in_check = false
+    @check_black_king = false
     false
   end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # If trying to move to a space that is taken
     # Check method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
-    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚' && @turn.odd?) || (@board.board_array[move_pos[0]][move_pos[1]] == '♔' && @turn.even?)
+    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚') || (@board.board_array[move_pos[0]][move_pos[1]] == '♔')
       if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
-        p @move_pos
         puts 'x needed to capture'
         return false
       end
@@ -158,7 +154,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        puts 'Collision!'
+        # puts 'Collision!'
         return false
       end
     end
@@ -171,8 +167,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
   end
 
-  def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-    @board.piece_put
+  def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    # @board.piece_put
     @board.board_display
     puts 'Welcome to Chess!'
     puts 'Load previous game Y/N?'
@@ -196,20 +192,26 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       loop do
         player_move
         move_translate
+        test = Marshal.load(Marshal.dump(@board.piece_positions))
+          # binding.pry
         if valid_move && capture
-          # @board.board_update
+          @board.board_update
+          # @board.board_display
+          # binding.pry
           check?
-          # @board.board_update
-          # p @in_check
-          p @check_white_king
-          p @check_black_king 
-          break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
-
+          # binding.pry # rubocop:disable Lint/Debugger
+          if @check_black_king == true
+            @board.piece_positions = test
+            # @board.board_update
+            # @board.board_display
+            # binding.pry
+            # @check_black_king = false
+          end
         end
+        # binding.pry
+        break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
       end
       @board.board_update
-      p @in_check
-
       @board.board_display
       puts 'Check!' if check?
       @turn += 1

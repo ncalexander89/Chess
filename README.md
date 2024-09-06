@@ -20,4 +20,8 @@ Is not moving into check and check the same function??
 
 Rooks
 
-Seems to check first rook and returns a collision without checking other rook
+Seems to check first rook and returns a collision without checking other rook - OK
+
+Board Update
+
+- 
