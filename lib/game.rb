@@ -105,10 +105,10 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    @rules.pieces.each do |piece|
-      @board.piece_positions[piece].each do |pos| # this is calling piece positions
-        @rules.move_positions[piece].each do |valid_move|
-          check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
+    @rules.pieces.each do |piece| # Go through each piece
+      @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
+        @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
+          check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Check if the move position from the starting pos
           if check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece)
             if no_collision?(check_move, pos)
               @check_black_king = true
@@ -129,9 +129,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    # If trying to move to a space that is taken
-    # Check method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
-    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚') || (@board.board_array[move_pos[0]][move_pos[1]] == '♔')
+    # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
+    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚' && @rules.white.include?(@piece)) || (@board.board_array[move_pos[0]][move_pos[1]] == '♔' && @rules.black.include?(@piece))
+      # If trying to move to a space that is taken
       if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
         puts 'x needed to capture'
         return false
