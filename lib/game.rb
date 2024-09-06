@@ -110,11 +110,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         @rules.move_positions[piece].each do |valid_move|
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]]
           if check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece)
-            p check_move
-            p pos
             if no_collision?(check_move, pos)
               @check_black_king = true
-              p @check_black_king
               return true
             end
           elsif check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece)
@@ -127,6 +124,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
     end
     @check_black_king = false
+    @check_white_king = false
     false
   end
 
@@ -168,7 +166,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    # @board.piece_put
     @board.board_display
     puts 'Welcome to Chess!'
     puts 'Load previous game Y/N?'
@@ -190,26 +187,33 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter $ anytime to save game'
     loop do
       loop do
+        # test_curr = Marshal.load(Marshal.dump(@current_pos))
+        # test_move = Marshal.load(Marshal.dump(@move_pos))
         player_move
         move_translate
-        test = Marshal.load(Marshal.dump(@board.piece_positions))
-          # binding.pry
-        if valid_move && capture
+        # test = Marshal.load(Marshal.dump(@board.piece_positions))
+        # test_curr = Marshal.load(Marshal.dump(@current_pos))
+        # test_move = Marshal.load(Marshal.dump(@move_pos))
+
+        # test_move = Marshal.load(Marshal.dump(@move))
+        next unless valid_move && capture
+
+        @board.board_update
+        # binding.pry
+        check?
+        # binding.pry
+        if @check_black_king == true
+          @current_pos, @move_pos = @move_pos, @current_pos
           @board.board_update
-          # @board.board_display
-          # binding.pry
-          check?
-          # binding.pry # rubocop:disable Lint/Debugger
-          if @check_black_king == true
-            @board.piece_positions = test
-            # @board.board_update
-            # @board.board_display
-            # binding.pry
-            # @check_black_king = false
-          end
+          next
         end
+          
+        #   @board.board_update
+        #   # binding.pry
+        # end
         # binding.pry
         break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
+        # binding.pry
       end
       @board.board_update
       @board.board_display
