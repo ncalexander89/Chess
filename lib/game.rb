@@ -152,7 +152,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        # puts 'Collision!'
+        puts 'Collision!' 
         return false
       end
     end
@@ -195,7 +195,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # binding.pry
         check?
         # binding.pry
-        if @check_black_king == true
+        # @board.board_update
+
+        if @check_black_king == true || @check_white_king == true
           @current_pos, @move_pos = @move_pos, @current_pos
           @board.board_update
           next
@@ -204,7 +206,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
       @board.board_update
       @board.board_display
-      puts 'Check!' if check?
+      # puts 'Check!' if check?
       @turn += 1
     end
   end
