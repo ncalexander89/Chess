@@ -187,15 +187,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter $ anytime to save game'
     loop do
       loop do
-        # test_curr = Marshal.load(Marshal.dump(@current_pos))
-        # test_move = Marshal.load(Marshal.dump(@move_pos))
         player_move
         move_translate
-        # test = Marshal.load(Marshal.dump(@board.piece_positions))
-        # test_curr = Marshal.load(Marshal.dump(@current_pos))
-        # test_move = Marshal.load(Marshal.dump(@move_pos))
-
-        # test_move = Marshal.load(Marshal.dump(@move))
         next unless valid_move && capture
 
         @board.board_update
@@ -207,13 +200,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           @board.board_update
           next
         end
-          
-        #   @board.board_update
-        #   # binding.pry
-        # end
-        # binding.pry
         break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
-        # binding.pry
       end
       @board.board_update
       @board.board_display
