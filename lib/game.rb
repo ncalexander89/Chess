@@ -9,7 +9,7 @@ require 'pry'
 require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
-  attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king, :check_white_king
+  attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king, :check_white_king, :check_possible
 
   def initialize # rubocop:disable Metrics/MethodLength
     @board = Board.new(self)
@@ -23,6 +23,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @check_move = nil
     @check_black_king = false
     @check_white_king = false
+    @check_possible = false
   end
 
   def player_move # rubocop:disable Metrics/MethodLength
@@ -93,76 +94,127 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # If player input is a valid move
         next unless @move_pos == [pos[0] + valid_move[0], pos[1] + valid_move[1]]
 
-        # Skips piece is pawn trying to double jump and not on first or 6th row
+        # Skips piece if pawn trying to double jump and not on first or 6th row
         next if @move[0] == 'p' && (pos[0] != 1 && pos[0] != 6) && (@move_pos[0] - pos[0]).abs == 2
 
+        # Stores the piece position in questions as @current_pos
         @current_pos = pos
+        # Sends the @move_pos and @current_pos to check if collision
         return true if no_collision?(@move_pos, @current_pos)
       end
     end
+    # If no pieces match the @move
     puts 'Enter a valid move'
     false
   end
 
-  def check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    @rules.pieces.each do |piece| # Go through each piece
+  # def check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  #   @rules.pieces.each do |piece| # Go through each piece
+  #     @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
+  #       @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
+  #         check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Final move position
+  #         if (check_move == @board.piece_positions['♚'][0]) && @rules.white.include?(piece)
+  #           @check_possible = true
+  #           if no_collision?(check_move, pos)
+  #             @check_black_king = true
+  #             p @check_black_king
+  #             return true
+  #           end
+  #         elsif check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece)
+  #           @check_possible = true
+  #           if no_collision?(check_move, pos)
+  #             @check_white_king = true
+  #             # p @check_white_king
+  #             return true
+  #           end
+  #         end
+  #       end
+  #     end
+  #   end
+  #   @check_black_king = false
+  #   @check_white_king = false
+  #   false
+  # end
+
+  def black_king_check # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    @rules.white.each do |piece| # Go through each piece
       @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
         @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
-          check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Check if the move position from the starting pos
-          if check_move == @board.piece_positions['♚'][0] && @rules.white.include?(piece)
-            if no_collision?(check_move, pos)
-              @check_black_king = true
-              return true
-            end
-          elsif check_move == @board.piece_positions['♔'][0] && @rules.black.include?(piece)
-            if no_collision?(check_move, pos)
-              @check_white_king = true
-              return true
-            end
-          end
+          check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Final move position
+          next unless check_move == @board.piece_positions['♚'][0]
+
+          @check_possible = true
+          next unless no_collision?(check_move, pos)
+
+          @check_black_king = true
+          p @check_black_king
+          return true
         end
       end
     end
     @check_black_king = false
+    @check_possible = false
+  end
+
+  def white_king_check # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    @rules.black.each do |piece| # Go through each piece
+      @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
+        @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
+          check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Final move position
+          next unless check_move == @board.piece_positions['♔'][0]
+
+          @check_possible = true
+          next unless no_collision?(check_move, pos)
+
+          @check_white_king = true
+          p @check_white_king
+          return true
+        end
+      end
+    end
     @check_white_king = false
+    @check_possible = false
     false
   end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
-    unless (@board.board_array[move_pos[0]][move_pos[1]] == '♚' && @rules.white.include?(@piece)) || (@board.board_array[move_pos[0]][move_pos[1]] == '♔' && @rules.black.include?(@piece))
-      # If trying to move to a space that is taken
-      if !@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' '
-        puts 'x needed to capture'
-        return false
-      end
+    # If trying to move to a space that is taken and not a capture
+    if (@check_possible == false) && (!@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' ')
+      puts 'x needed to capture'
+      return false
     end
 
+    # Number of steps in row and col
     steps = [move_pos[0] - current_pos[0], move_pos[1] - current_pos[1]]
     row = 0
     col = 0
     loop do
-      return true if @move[0] == 'n'
+      break if @move[0] == 'n'
 
       row += 1 if row < steps[0]
       row -= 1 if row > steps[0]
       col += 1 if col < steps[1]
       col -= 1 if col > steps[1]
 
+      # Gets to end position without collision
       return true if row == steps[0] && col == steps[1]
 
       if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
-        puts 'Collision!' 
+        puts 'Collision!'
         return false
       end
     end
+    true
   end
 
   def capture # rubocop:disable Metrics/AbcSize
     return true unless @move.include?('x') # seems weird
     return true if @turn.odd? && @rules.black.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
 
-    true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
+    return true if @turn.even? && @rules.white.include?(@board.board_array[@move_pos[0]][@move_pos[1]][0])
+
+    false
   end
 
   def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
@@ -187,27 +239,34 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter $ anytime to save game'
     loop do
       loop do
-        player_move
-        move_translate
-        next unless valid_move && capture
+        player_move # @move
+        move_translate # @piece, @move_pos
+        # @current_pos
+        next unless valid_move && capture # Goes back to start of loop if either false
 
-        @board.board_update
-        # binding.pry
-        check?
-        # binding.pry
-        # @board.board_update
-
-        if @check_black_king == true || @check_white_king == true
+        @board.update_piece_position
+        if @turn.odd? && white_king_check
+          # If moving into check
           @current_pos, @move_pos = @move_pos, @current_pos
-          @board.board_update
+          @board.update_piece_position
           next
         end
-        break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
+        break
+          # break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
       end
-      @board.board_update
-      @board.board_display
-      # puts 'Check!' if check?
-      @turn += 1
-    end
+
+        # if (@check_black_king == true && @turn.even?) || (@check_white_king == true && @turn.odd?)
+        #   @current_pos, @move_pos = @move_pos, @current_pos
+        #   @board.board_update
+        #   next
+        # end
+      # break if (@check_white_king == false && @turn.odd?) && (@check_black_king == false && @turn.even?)
+    
+    @board.update_piece_position
+    @board.board_update
+    @board.board_display
+    # puts 'Check!' if check?
+    @turn += 1
   end
+end
 end

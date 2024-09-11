@@ -9,7 +9,7 @@ class Board # rubocop:disable Style/Documentation
     @board_array = Array.new(8) { Array.new(8, ' ') } # First row at the top
     @game_instance = game_instance
 
-    # Define positions for all pieces
+    # Define orignal positions for all pieces
     @piece_positions = {
       '♙' => (0..7).map { |i| [1, i] }, # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
       '♟' => (0..7).map { |i| [6, i] }, # Black pawns
@@ -24,17 +24,17 @@ class Board # rubocop:disable Style/Documentation
       '♕' => [[0, 3]],         # White queen
       '♛' => [[7, 3]]          # Black queen
     }
-
-    # Place pieces on the board, loops over hash key value pair
     piece_put
   end
 
+  # Goes through each piece position and plots on @board_array
   def piece_put
     @piece_positions.each do |piece, positions|
       positions.each { |row, col| @board_array[row][col] = piece }
     end
   end
 
+  # Displays board according to @board_array
   def board_display
     puts '  ---------------------------------'
     @board_array.reverse.each_with_index do |row, index|
@@ -44,9 +44,15 @@ class Board # rubocop:disable Style/Documentation
     puts '    A   B   C   D   E   F   G   H  '
   end
 
-  def board_update # rubocop:disable Metrics/AbcSize
+  def update_piece_position
+    # Updates @piece_positions hash, if the piece in question matches the current pos, then the piece pos is udpated to move_pos in @piece_positions
     @piece_positions[@game_instance.piece].map! { |sub| sub == @game_instance.current_pos ? @game_instance.move_pos : sub } # rubocop:disable Layout/LineLength
+  end
+
+  def board_update
+    # piece is now where move_pos is in @board_array (called by board_display)
     @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = [@game_instance.piece]
+    # current pos is left empty in @board_array (called by board_display)
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
 end

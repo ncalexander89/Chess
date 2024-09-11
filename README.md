@@ -26,14 +26,37 @@ Seems to check first rook and returns a collision without checking other rook - 
 
 NEXT ISSUE:
 
+SEEMS TO BE SPECIFIC WITH FROM 'CHECK'
+
 THINGS ARE HAPPENING THAT ARENT DISPLAYED
 KNIGHT BLOCKING CHECK ISN'T SHOWN ON BOARD
 NOT GOING TO NEXT PLAYERS TURN
 Move not ending after CHECK
-ROOKS CAN REPLACE KINGS POSITION
+ROOKS CAN REPLACE KINGS POSITION - OK
 KNIGHTS CANT MOVE AFTER CHECK
 QUEEN CAN CAPTURE WITHOUT MOVING TO POSITION
 
 WHAT IS HAPPENING IN CODE
 
+QUEEN MOVES TO A CHECK POSITION WITH A PAWN BLOCKING
+BLACK KNIGHT CANT MOVE, CHECK KING == TRUE, CHECK!
 
+Black Queen blocked by bishop for a check
+White moves
+Black Queen still blocked for a check
+Check is shown
+True @check black king
+Game breaks
+
+White bishop checks black king
+No check 
+black tries to move while still in check
+black king check TRUE
+Check!
+knight can move
+game breaks
+
+@board.board_update
+this is updating all the invalid move positions
+
+Capturing a piece means both pieces occupy same spot?
