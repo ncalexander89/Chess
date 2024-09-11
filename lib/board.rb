@@ -51,8 +51,15 @@ class Board # rubocop:disable Style/Documentation
 
   def board_update
     # piece is now where move_pos is in @board_array (called by board_display)
-    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = [@game_instance.piece]
+    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = @game_instance.piece
     # current pos is left empty in @board_array (called by board_display)
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
+  end
+
+  def board_revert
+    # piece is now where move_pos is in @board_array (called by board_display)
+    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = ' '
+    # current pos is left empty in @board_array (called by board_display)
+    @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = @game_instance.piece
   end
 end

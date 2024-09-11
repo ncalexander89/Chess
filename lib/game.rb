@@ -136,7 +136,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   #   false
   # end
 
-  def black_king_check # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def black_king_check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @rules.white.each do |piece| # Go through each piece
       @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
         @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
@@ -154,9 +154,10 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
     @check_black_king = false
     @check_possible = false
+    false
   end
 
-  def white_king_check # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def white_king_check? # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @rules.black.each do |piece| # Go through each piece
       @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
         @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
@@ -167,7 +168,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           next unless no_collision?(check_move, pos)
 
           @check_white_king = true
-          p @check_white_king
+          puts "Can't move into Check!"
           return true
         end
       end
@@ -187,6 +188,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
     # Number of steps in row and col
     steps = [move_pos[0] - current_pos[0], move_pos[1] - current_pos[1]]
+    # p steps
     row = 0
     col = 0
     loop do
@@ -200,7 +202,15 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       # Gets to end position without collision
       return true if row == steps[0] && col == steps[1]
 
-      if @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
+      # p row
+      # p col
+      # p @board.board_array[current_pos[0] + row][current_pos[1] + col]
+
+      if @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♔'
+        # puts "Can't move into Check!"
+        return false
+
+      elsif @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
         puts 'Collision!'
         return false
       end
@@ -244,29 +254,33 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # @current_pos
         next unless valid_move && capture # Goes back to start of loop if either false
 
-        @board.update_piece_position
-        if @turn.odd? && white_king_check
+        # @board.update_piece_position
+        @board.board_update
+        if @turn.odd? && white_king_check?
           # If moving into check
+          # binding.pry
           @current_pos, @move_pos = @move_pos, @current_pos
-          @board.update_piece_position
+          # @board.update_piece_position
+          @board.board_update
+          @check_white_king = false
+          # binding.pry
           next
         end
         break
-          # break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
+        # break if (@check_white_king == false && @turn.odd?) || (@check_black_king == false && @turn.even?)
       end
 
-        # if (@check_black_king == true && @turn.even?) || (@check_white_king == true && @turn.odd?)
-        #   @current_pos, @move_pos = @move_pos, @current_pos
-        #   @board.board_update
-        #   next
-        # end
+      # if (@check_black_king == true && @turn.even?) || (@check_white_king == true && @turn.odd?)
+      #   @current_pos, @move_pos = @move_pos, @current_pos
+      #   @board.board_update
+      #   next
+      # end
       # break if (@check_white_king == false && @turn.odd?) && (@check_black_king == false && @turn.even?)
-    
-    @board.update_piece_position
-    @board.board_update
-    @board.board_display
-    # puts 'Check!' if check?
-    @turn += 1
+      @board.update_piece_position
+      @board.board_update
+      @board.board_display
+      # puts 'Check!' if check?
+      @turn += 1
+    end
   end
-end
 end
