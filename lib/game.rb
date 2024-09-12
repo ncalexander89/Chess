@@ -100,7 +100,10 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # Stores the piece position in questions as @current_pos
         @current_pos = pos
         # Sends the @move_pos and @current_pos to check if collision
-        return true if no_collision?(@move_pos, @current_pos) || @move[0] == 'n'
+        # binding.pry
+        # p @board.board_array[@move_pos[0]][@move_pos[1]][0]
+        return true if no_collision?(@move_pos,
+                                     @current_pos) || (@move[0] == 'n' && (@board.board_array[@move_pos[0]][@move_pos[1]][0]) == ' ') # rubocop:disable Layout/LineLength
       end
     end
     # If no pieces match the @move
