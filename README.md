@@ -60,3 +60,6 @@ game breaks
 this is updating all the invalid move positions
 
 Capturing a piece means both pieces occupy same spot?
+
+Piece attempts to take piece moving into check
+piece is removed, knight moves backn

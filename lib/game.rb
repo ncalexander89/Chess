@@ -231,8 +231,16 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # Move into check
         if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
           # binding.pry
-          @current_pos, @move_pos = @move_pos, @current_pos
-          @board.board_update
+
+          # @current_pos, @move_pos = @move_pos, @current_pos
+
+          # @board.board_update
+          @board.board_revert
+          # @board.update_piece_position
+          @board.piece_put
+
+          # binding.pry
+
           @check_white_king = false
           @check_black_king = false
           next
