@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
 # board.rb
+require 'pry'
+require_relative 'rules'
 
 class Board # rubocop:disable Style/Documentation
-  attr_accessor :board_array, :game_instance, :piece_positions
+  attr_accessor :board_array, :game_instance, :piece_positions, :rules_instance
 
   def initialize(game_instance) # rubocop:disable Metrics/MethodLength
     @board_array = Array.new(8) { Array.new(8, ' ') } # First row at the top
     @game_instance = game_instance
+    @rules_instance = Rules.new
 
     # Define orignal positions for all pieces
     @piece_positions = {
@@ -45,7 +48,14 @@ class Board # rubocop:disable Style/Documentation
   end
 
   def update_piece_position
-    # Updates @piece_positions hash, if the piece in question matches the current pos, then the piece pos is udpated to move_pos in @piece_positions
+    # Updates @piece_positions hash, if the piece in question matches the current pos, then the piece pos is udpated to move_pos in @piece_positions # rubocop:disable Layout/LineLength
+    @rules_instance.pieces.each do |piece| # Go through each piece
+      @piece_positions[piece].each do |pos| # Go through each current position of each piece
+        next unless pos == @game_instance.move_pos
+
+        @piece_positions[piece].delete(pos) # Removes the position from piece positions
+      end
+    end
     @piece_positions[@game_instance.piece].map! { |sub| sub == @game_instance.current_pos ? @game_instance.move_pos : sub } # rubocop:disable Layout/LineLength
   end
 
@@ -56,9 +66,10 @@ class Board # rubocop:disable Style/Documentation
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
 
-  def board_revert
+  def board_revert # rubocop:disable Metrics/AbcSize
     # piece is now where move_pos is in @board_array (called by board_display)
-    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]]
+    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] =
+      @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]]
     # current pos is left empty in @board_array (called by board_display)
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = @game_instance.piece
   end

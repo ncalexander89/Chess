@@ -63,3 +63,15 @@ Capturing a piece means both pieces occupy same spot?
 
 Piece attempts to take piece moving into check
 piece is removed, knight moves backn
+
+white pony cant take piece if white rook checks black king
+
+doesnt display check
+
+Knight cant take e5?
+
+Why does e5 pawn reappear from save?
+
+Taken pieces reappear from save
+
+piece positions needs to update piece taken

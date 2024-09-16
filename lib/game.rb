@@ -88,7 +88,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @move_pos = [row, col]
   end
 
-  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def valid_move # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/MethodLength
     @board.piece_positions[@piece].each do |pos| # this is calling piece positions
       @rules.move_positions[@piece].each do |valid_move|
         # If player input is a valid move
@@ -155,7 +155,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    # return true if @move[0] == 'n' && @check_possible == false
+    return true if @move[0] == 'n' && @check_possible == false
 
     # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
     # If trying to move to a space that is taken and not a capture
@@ -185,6 +185,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
       elsif @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
         puts 'Collision!'
+        # binding.pry
         return false
       end
     end
@@ -222,6 +223,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter $ anytime to save game'
     loop do
       loop do
+        # binding.pry
         player_move # @move
         move_translate # @piece, @move_pos
         # @current_pos
@@ -247,11 +249,13 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         end
         break
       end
+      # binding.pry
       @board.update_piece_position
-      @board.board_update
+      # @board.board_update
       @board.board_display
       # puts 'Check!' if white_king_check? || black_king_check?
       @turn += 1
+      # binding.pry
     end
   end
 end
