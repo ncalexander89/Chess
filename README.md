@@ -68,10 +68,13 @@ white pony cant take piece if white rook checks black king
 
 doesnt display check
 
-Knight cant take e5?
-
-Why does e5 pawn reappear from save?
-
-Taken pieces reappear from save
-
 piece positions needs to update piece taken
+
+No 'Check!' when other piece checks king
+n
+
+Black queen cant take rook infront of king
+
+Now its getting to the more complicated game rules it may be worth while to writes tests as opposed to doing the moves yourself
+
+

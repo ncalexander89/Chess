@@ -143,8 +143,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           next unless no_collision?(check_move, pos)
 
           @check_white_king = true
-          # binding.pry
-          puts "Can't move into Check!"
+          puts 'Check White King!'
           return true
         end
       end
@@ -155,14 +154,15 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   end
 
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-    return true if @move[0] == 'n' && @check_possible == false
-
     # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
     # If trying to move to a space that is taken and not a capture
     if (@check_possible == false) && (!@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' ')
       puts 'x needed to capture'
       return false
     end
+
+    return true if @move[0] == 'n' && @check_possible == false
+
 
     # Number of steps in row and col
     steps = [move_pos[0] - current_pos[0], move_pos[1] - current_pos[1]]
@@ -253,7 +253,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       @board.update_piece_position
       # @board.board_update
       @board.board_display
-      # puts 'Check!' if white_king_check? || black_king_check?
+      puts 'Check!' if white_king_check? || black_king_check?
       @turn += 1
       # binding.pry
     end
