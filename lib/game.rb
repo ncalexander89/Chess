@@ -37,7 +37,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
-        return true # do we need to return move?
+        return @move # do we need to return move?
       else
         puts 'Enter a valid input'
       end

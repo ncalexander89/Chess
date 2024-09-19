@@ -11,7 +11,6 @@ describe Game do # rubocop:disable Metrics/BlockLength
 
   before do
     allow(game).to receive(:puts) # Avoid actual printing to console
-    board.piece_positions # or similar method that initializes @piece_positions
     allow(game).to receive(:gets).and_return('pe4')
     game.player_move # Captures @move
     game.move_translate # Captures @move_pos, @piece
@@ -43,8 +42,8 @@ describe Game do # rubocop:disable Metrics/BlockLength
   describe '#Valid_move' do # rubocop:disable Metrics/BlockLength
     context 'When player enters a piece with an invalid move' do
       it 'Prompts user for valid move' do
-        game.instance_variable_set(:@piece, '♖')
-        game.instance_variable_set(:@move_pos, [1, 1]) # Rook attempts diag move
+        game.instance_variable_set(:@piece, '♘')
+        game.instance_variable_set(:@move_pos, [2, 2]) # Pony attempts 2x diag move
         expect(game).to receive(:puts).with('Enter a valid move')
         expect(game.valid_move).to be false
       end
@@ -52,8 +51,8 @@ describe Game do # rubocop:disable Metrics/BlockLength
 
     context 'When player enters a piece with a valid move' do
       it 'Sets correct piece position and returns true' do
-        game.instance_variable_set(:@piece, '♖')
-        game.instance_variable_set(:@move_pos, [3, 0])
+        game.instance_variable_set(:@piece, '♙')
+        game.instance_variable_set(:@move_pos, [2, 0])
         expect(game.valid_move).to be true
       end
     end
@@ -83,8 +82,6 @@ describe Game do # rubocop:disable Metrics/BlockLength
     let(:current_pos) { [0, 0] }
     let(:move_pos) { [5, 0] }
     before do
-      board.piece_positions
-      board.piece_put
       game.instance_variable_set(:@move_pos, move_pos)
       game.instance_variable_set(:@current_pos, current_pos)
       game.instance_variable_set(:@piece, '♖')
@@ -93,14 +90,14 @@ describe Game do # rubocop:disable Metrics/BlockLength
     context 'When there is a collision' do
       it 'Prompts user for valid input' do
         expect(game).to receive(:puts).with('Collision!')
-        expect(game.no_collision?).to be false
+        expect(game.no_collision?(move_pos, current_pos)).to be false
       end
     end
 
     context 'When there is no collision' do
       let(:current_pos) { [2, 0] }
       it 'Sets correct piece position and returns true' do
-        expect(game.no_collision?).to be true
+        expect(game.no_collision?(move_pos, current_pos)).to be true
       end
     end
 
@@ -113,7 +110,7 @@ describe Game do # rubocop:disable Metrics/BlockLength
       let(:move) { 'ra7' }
       it 'returns false' do
         expect(game).to receive(:puts).with('x needed to capture')
-        expect(game.no_collision?).to be false
+        expect(game.no_collision?(move_pos, current_pos)).to be false
       end
     end
   end
