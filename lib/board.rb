@@ -13,15 +13,30 @@ class Board # rubocop:disable Style/Documentation
     @rules_instance = Rules.new
 
     # Define orignal positions for all pieces
+    # @piece_positions = {
+    #   '♙' => (0..7).map { |i| [1, i] }, # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
+    #   '♟' => (0..7).map { |i| [6, i] }, # Black pawns
+    #   '♖' => [[0, 0], [0, 7]], # White rooks
+    #   '♜' => [[7, 0], [7, 7]], # Black rooks
+    #   '♗' => [[0, 2], [0, 5]], # White bishops
+    #   '♝' => [[7, 2], [7, 5]], # Black bishops
+    #   '♘' => [[0, 1], [0, 6]], # White knights
+    #   '♞' => [[7, 1], [7, 6]], # Black knights
+    #   '♔' => [[0, 4]],         # White king
+    #   '♚' => [[7, 4]],         # Black king
+    #   '♕' => [[0, 3]],         # White queen
+    #   '♛' => [[7, 3]]          # Black queen
+    # }
+
     @piece_positions = {
-      '♙' => (0..7).map { |i| [1, i] }, # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
-      '♟' => (0..7).map { |i| [6, i] }, # Black pawns
-      '♖' => [[0, 0], [0, 7]], # White rooks
-      '♜' => [[7, 0], [7, 7]], # Black rooks
-      '♗' => [[0, 2], [0, 5]], # White bishops
-      '♝' => [[7, 2], [7, 5]], # Black bishops
-      '♘' => [[0, 1], [0, 6]], # White knights
-      '♞' => [[7, 1], [7, 6]], # Black knights
+      '♙' => [], # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
+      '♟' => [],
+      '♖' => [], # White rooks
+      '♜' => [], # Black rooks
+      '♗' => [], # White bishops
+      '♝' => [], # Black bishops
+      '♘' => [], # White knights
+      '♞' => [], # Black knights
       '♔' => [[0, 4]],         # White king
       '♚' => [[7, 4]],         # Black king
       '♕' => [[0, 3]],         # White queen
@@ -66,10 +81,9 @@ class Board # rubocop:disable Style/Documentation
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = ' '
   end
 
-  def board_revert # rubocop:disable Metrics/AbcSize
+  def board_revert
     # piece is now where move_pos is in @board_array (called by board_display)
-    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] =
-      @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]]
+    @board_array[@game_instance.move_pos[0]][@game_instance.move_pos[1]] = ' '
     # current pos is left empty in @board_array (called by board_display)
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = @game_instance.piece
   end

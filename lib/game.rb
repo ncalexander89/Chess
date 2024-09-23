@@ -9,7 +9,8 @@ require 'pry'
 require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
-  attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king, :check_white_king, :check_possible
+  attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king,
+                :check_white_king, :check_possible
 
   def initialize # rubocop:disable Metrics/MethodLength
     @board = Board.new(self)
@@ -144,6 +145,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
           @check_white_king = true
           puts 'Check White King!'
+          # binding.pry
           return true
         end
       end
@@ -163,7 +165,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
     return true if @move[0] == 'n' && @check_possible == false
 
-
     # Number of steps in row and col
     steps = [move_pos[0] - current_pos[0], move_pos[1] - current_pos[1]]
     row = 0
@@ -176,10 +177,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       col += 1 if col < steps[1]
       col -= 1 if col > steps[1]
 
-      # Gets to end position without collision
-      return true if row == steps[0] && col == steps[1]
+      return true if row == steps[0] && col == steps[1] 
 
-      if @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♔'
+      if @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♔' || @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♚'
         # puts "Can't move into Check!"
         return false
 
@@ -188,7 +188,12 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # binding.pry
         return false
       end
+
+      # Gets to end position without collision
+      # binding.pry
+      return true if row == steps[0] && col == steps[1] 
     end
+    # binding.pry
     true
   end
 

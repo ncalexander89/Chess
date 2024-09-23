@@ -4,10 +4,12 @@
 
 require_relative '../lib/board'
 require_relative '../lib/game'
+require_relative '../lib/rules'
 
 describe Game do # rubocop:disable Metrics/BlockLength
   subject(:game) { Game.new }
   let(:board) { Board.new(game) }
+  let(:rules) { Rules.new }
 
   before do
     allow(game).to receive(:puts) # Avoid actual printing to console
@@ -124,6 +126,44 @@ describe Game do # rubocop:disable Metrics/BlockLength
       end
       it 'Piece gets captured' do
         expect(game.capture).to be true
+      end
+    end
+  end
+
+  describe '#Black King Check' do # rubocop:disable Metrics/BlockLength
+    context 'When white piece puts black king in check' do # rubocop:disable Metrics/BlockLength
+      before do
+        # Clear the board so only kings and rooks remain
+        board.instance_variable_set(:@board_array, Array.new(8) { Array.new(8, ' ') })
+        board.instance_variable_set(:@piece_positions, {
+                                      '♙' => [], # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
+                                      '♟' => [],
+                                      '♖' => [], # White rooks
+                                      '♜' => [], # Black rooks
+                                      '♗' => [], # White bishops
+                                      '♝' => [], # Black bishops
+                                      '♘' => [], # White knights
+                                      '♞' => [], # Black knights
+                                      '♔' => [[0, 4]], # White king
+                                      '♚' => [[7, 4]], # Black king
+                                      '♕' => [[0, 3]], # White queen
+                                      '♛' => [[7, 3]] # Black queen
+                                    })
+        # Set up game variables
+        game.instance_variable_set(:@piece, '♕')
+        game.instance_variable_set(:@move_pos, [1, 4])
+        game.instance_variable_set(:@current_pos, [0, 3])
+        # puts board.piece_positions
+        board.piece_positions['♚'][0]
+        # board.piece_put
+        # board.board_display
+      end
+      it 'Detects the black king is in check' do
+        expect(game.black_king_check?).to be true
+
+        # Check the internal state related to check detection
+        expect(game.instance_variable_get(:@check_possible)).to be true
+        expect(game.instance_variable_get(:@check_black_king)).to be true
       end
     end
   end
