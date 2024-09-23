@@ -77,7 +77,7 @@ Black queen cant take rook infront of king
 
 Now its getting to the more complicated game rules it may be worth while to writes tests as opposed to doing the moves yourself
 
-23rd Sep    OK
+23rd Sep    
 Queen tries to move to position that puts own king in check,
 not allowed, queen moves to position that blocks check,
 orignal move is not cleared

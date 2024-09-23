@@ -231,34 +231,45 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # binding.pry
         player_move # @move
         move_translate # @piece, @move_pos
+
+        @previous_piece_positions = Marshal.load(Marshal.dump(@board.piece_positions)) # Deep copy
+
         # @current_pos
         next unless valid_move && capture # Goes back to start of loop if either false
 
         @board.board_update
+
+        @board.update_piece_position
+
         # Move into check
         if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
           # binding.pry
 
           # @current_pos, @move_pos = @move_pos, @current_pos
+          @board.piece_positions = @previous_piece_positions # Restore the previous state
 
           # @board.board_update
           @board.board_revert
+          # @previous_piece_positions
           # @board.update_piece_position
-          @board.piece_put
+          # @board.piece_put
 
           # binding.pry
 
           @check_white_king = false
           @check_black_king = false
+          binding.pry
+
           next
         end
         break
       end
       # binding.pry
-      @board.update_piece_position
+      puts 'Check!' if white_king_check? || black_king_check?
+
+      # @board.update_piece_position
       # @board.board_update
       @board.board_display
-      puts 'Check!' if white_king_check? || black_king_check?
       @turn += 1
       # binding.pry
     end

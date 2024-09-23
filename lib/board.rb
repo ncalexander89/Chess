@@ -87,4 +87,16 @@ class Board # rubocop:disable Style/Documentation
     # current pos is left empty in @board_array (called by board_display)
     @board_array[@game_instance.current_pos[0]][@game_instance.current_pos[1]] = @game_instance.piece
   end
+
+  # def revert_piece_position
+  #   # Updates @piece_positions hash, if the piece in question matches the current pos, then the piece pos is udpated to move_pos in @piece_positions # rubocop:disable Layout/LineLength
+  #   @rules_instance.pieces.each do |piece| # Go through each piece
+  #     @piece_positions[piece].each do |pos| # Go through each current position of each piece
+  #       next unless pos == @game_instance.move_pos
+
+  #       @piece_positions[piece].delete(pos) # Removes the position from piece positions
+  #     end
+  #   end
+  #   @piece_positions[@game_instance.piece].map! { |sub| sub == @game_instance.current_pos ? @game_instance.move_pos : sub } # rubocop:disable Layout/LineLength
+  # end
 end
