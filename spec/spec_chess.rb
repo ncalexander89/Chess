@@ -132,6 +132,10 @@ describe Game do # rubocop:disable Metrics/BlockLength
 
   describe '#Black King Check' do # rubocop:disable Metrics/BlockLength
     context 'When white piece puts black king in check' do # rubocop:disable Metrics/BlockLength
+      let(:game) { Game.new } 
+      # let(:rules) { Rules.new }
+      # let(:board) { Board.new(game) }  # Assuming you have a Board class
+
       before do
         # Clear the board so only kings and rooks remain
         board.instance_variable_set(:@board_array, Array.new(8) { Array.new(8, ' ') })
@@ -146,22 +150,28 @@ describe Game do # rubocop:disable Metrics/BlockLength
                                       '♞' => [], # Black knights
                                       '♔' => [[0, 4]], # White king
                                       '♚' => [[7, 4]], # Black king
-                                      '♕' => [[0, 3]], # White queen
+                                      '♕' => [[1, 4]], # White queen
                                       '♛' => [[7, 3]] # Black queen
                                     })
-        # Set up game variables
-        game.instance_variable_set(:@piece, '♕')
-        game.instance_variable_set(:@move_pos, [1, 4])
-        game.instance_variable_set(:@current_pos, [0, 3])
-        # puts board.piece_positions
-        board.piece_positions['♚'][0]
-        # board.piece_put
-        # board.board_display
+       rules.instance_variable_set(:@white, ['♕'])
+       rules.instance_variable_set(:@move_pos, {
+        '♕' => [6,0]
+       })                             
+       board.piece_put 
+       p board.board_array 
+       p board.piece_positions['♚'][0]
+       p board.piece_positions['♕'][0]
+       game.black_king_check?                           
       end
       it 'Detects the black king is in check' do
+        # game.black_king_check?
+        # p game.instance_variable_get(:@check_move)
+        expect(game.instance_variable_get(:@check_move)).to eq([7, 4])  # Replace with expected value
         expect(game.black_king_check?).to be true
+      #   expect(game.instance_variable_get(:@check_move)).to eq([7,4]) # Replace with expected value
+      #   expect(game.black_king_check?).to be true
 
-        # Check the internal state related to check detection
+      #   # Check the internal state related to check detection
         expect(game.instance_variable_get(:@check_possible)).to be true
         expect(game.instance_variable_get(:@check_black_king)).to be true
       end

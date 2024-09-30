@@ -10,7 +10,7 @@ require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king,
-                :check_white_king, :check_possible
+                :check_white_king, :check_possible, :white_castle_kside, :white_castle_qside, :black_castle_qside, :black_castle_kside
 
   def initialize # rubocop:disable Metrics/MethodLength
     @board = Board.new(self)
@@ -25,6 +25,10 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @check_black_king = false
     @check_white_king = false
     @check_possible = false
+    @white_castle_qside = true
+    @white_castle_kside = true
+    @black_castle_qside = true
+    @black_castle_kside = true
   end
 
   def player_move # rubocop:disable Metrics/MethodLength
@@ -101,8 +105,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # Stores the piece position in questions as @current_pos
         @current_pos = pos
         # Sends the @move_pos and @current_pos to check if collision
-        # binding.pry
-        # p @board.board_array[@move_pos[0]][@move_pos[1]][0]
         return true if no_collision?(@move_pos,
                                      @current_pos) || (@move[0] == 'n' && (@board.board_array[@move_pos[0]][@move_pos[1]][0]) == ' ') # rubocop:disable Layout/LineLength
       end
@@ -117,6 +119,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       @board.piece_positions[piece].each do |pos| # Go through each current position of each piece
         @rules.move_positions[piece].each do |valid_move| # Go through each move position of each piece
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Final move position
+          @check_move = check_move # Store the value in an instance variable
           next unless check_move == @board.piece_positions['♚'][0]
 
           @check_possible = true
@@ -145,7 +148,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
           @check_white_king = true
           puts 'Check White King!'
-          # binding.pry
           return true
         end
       end
@@ -158,6 +160,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   def no_collision?(move_pos, current_pos) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
     # If trying to move to a space that is taken and not a capture
+    # THIS IS WHY QUEEN CAN CAPTURE KNIGHT WIHTOUT 'X'
     if (@check_possible == false) && (!@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' ')
       puts 'x needed to capture'
       return false
@@ -185,15 +188,12 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
       elsif @board.board_array[current_pos[0] + row][current_pos[1] + col] != ' '
         puts 'Collision!'
-        # binding.pry
         return false
       end
 
       # Gets to end position without collision
-      # binding.pry
       return true if row == steps[0] && col == steps[1] 
     end
-    # binding.pry
     true
   end
 
@@ -228,13 +228,11 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     puts 'Enter $ anytime to save game'
     loop do
       loop do
-        # binding.pry
         player_move # @move
         move_translate # @piece, @move_pos
 
         @previous_piece_positions = Marshal.load(Marshal.dump(@board.piece_positions)) # Deep copy
 
-        # @current_pos
         next unless valid_move && capture # Goes back to start of loop if either false
 
         @board.board_update
@@ -243,35 +241,29 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         # Move into check
         if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
-          # binding.pry
 
-          # @current_pos, @move_pos = @move_pos, @current_pos
           @board.piece_positions = @previous_piece_positions # Restore the previous state
 
-          # @board.board_update
           @board.board_revert
-          # @previous_piece_positions
-          # @board.update_piece_position
-          # @board.piece_put
-
-          # binding.pry
-
           @check_white_king = false
           @check_black_king = false
-          binding.pry
 
           next
         end
         break
       end
       # binding.pry
+
+      @white_castle_qside = false if @board.board_array[0][0] != '♖' || @board.board_array[0][4] != '♔'
+      @white_castle_kside = false if @board.board_array[0][7] != '♖' || @board.board_array[0][4] != '♔'
+      @black_castle_qside = false if @board.board_array[7][0] != '♜' || @board.board_array[7][4] != '♚'
+      @black_castle_kside = false if @board.board_array[7][7] != '♜' || @board.board_array[7][4] != '♚'
+
       puts 'Check!' if white_king_check? || black_king_check?
 
-      # @board.update_piece_position
-      # @board.board_update
       @board.board_display
       @turn += 1
-      # binding.pry
+      binding.pry
     end
   end
 end

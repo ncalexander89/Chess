@@ -31,15 +31,15 @@ class Board # rubocop:disable Style/Documentation
     @piece_positions = {
       '♙' => [], # White pawns 0 -> [1,0], 1 -> [1,1] times 7 (cols)
       '♟' => [],
-      '♖' => [], # White rooks
-      '♜' => [], # Black rooks
+      '♖' => [[0, 0], [0, 7]], # White rooks
+      '♜' => [[7, 0], [7, 7]], # Black rooks
       '♗' => [], # White bishops
       '♝' => [], # Black bishops
       '♘' => [], # White knights
-      '♞' => [], # Black knights
+      '♞' => [[3, 5]], # Black knights
       '♔' => [[0, 4]],         # White king
       '♚' => [[7, 4]],         # Black king
-      '♕' => [[0, 3]],         # White queen
+      '♕' => [[1, 3]],         # White queen
       '♛' => [[7, 3]]          # Black queen
     }
     piece_put
