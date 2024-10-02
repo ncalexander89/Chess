@@ -10,9 +10,9 @@ require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king,
-                :check_white_king, :check_possible, :white_castle_kside, :white_castle_qside, :black_castle_qside, :black_castle_kside
+                :check_white_king, :check_possible, :white_castle_kside, :white_castle_qside, :black_castle_qside, :black_castle_kside # rubocop:disable Layout/LineLength
 
-  def initialize # rubocop:disable Metrics/MethodLength
+  def initialize # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     @board = Board.new(self)
     @rules = Rules.new
     @turn = 1
@@ -29,6 +29,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @white_castle_kside = true
     @black_castle_qside = true
     @black_castle_kside = true
+    @castle = false
   end
 
   def player_move # rubocop:disable Metrics/MethodLength
@@ -43,6 +44,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       if input.match?(/^[prbnkq](d[a-h]|[a-h])?(x)?[a-h][1-8]$/)
         @move = input
         return @move # do we need to return move?
+      elsif input.match?('00') || input.match?('000') # rubocop:disable Lint/DuplicateBranch
+        @move = input
+        return @move
       else
         puts 'Enter a valid input'
       end
@@ -182,7 +186,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
       return true if row == steps[0] && col == steps[1] 
 
-      if @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♔' || @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♚'
+      if @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♔' || @board.board_array[current_pos[0] + row][current_pos[1] + col] == '♚' # rubocop:disable Layout/LineLength
         # puts "Can't move into Check!"
         return false
 
@@ -206,6 +210,72 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     false
   end
 
+  def castle # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+    if @move == '00' && @white_castle_kside == true && @turn.odd?
+      i = 5
+      while i < 7
+        if @board.board_array[0][i] != ' '
+          @castle = false
+          return
+        end
+
+        i += 1
+      end
+      # @board.piece_positions['♖'].delete([0, 7])
+      @board.piece_positions['♖'][1] = [0, 5]
+      @board.piece_positions['♔'][0] = [0, 6]
+      @castle = true
+      return true
+    elsif @move == '000' && @white_castle_qside == true && @turn.odd?
+      i = 1
+      while i < 4
+        if @board.board_array[0][i] != ' '
+          @castle = false
+          return
+        end
+
+        i += 1
+      end
+      # @board.piece_positions['♖'].delete([0, 7])
+      @board.piece_positions['♖'][0] = [0, 3]
+      @board.piece_positions['♔'][0] = [0, 2]
+      @castle = true
+      return true
+    elsif @move == '00' && @black_castle_kside == true && @turn.even?
+      i = 5
+      while i < 7
+        if @board.board_array[7][i] != ' '
+          @castle = false
+          return
+        end
+
+        i += 1
+      end
+      # @board.piece_positions['♖'].delete([0, 7])
+      @board.piece_positions['♜'][1] = [7, 5]
+      @board.piece_positions['♚'][0] = [7, 6]
+      @castle = true
+      return true
+    elsif @move == '000' && @black_castle_qside == true && @turn.even?
+      i = 1
+      while i < 4
+        if @board.board_array[7][i] != ' '
+          @castle = false
+          return
+        end
+
+        i += 1
+      end
+      # @board.piece_positions['♖'].delete([0, 7])
+      @board.piece_positions['♜'][0] = [7, 3]
+      @board.piece_positions['♚'][0] = [7, 2]
+      @castle = true
+      return true
+    end
+    @castle = false
+    false
+  end
+
   def gameplay # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     @board.board_display
     puts 'Welcome to Chess!'
@@ -226,34 +296,44 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       @board.board_display
     end
     puts 'Enter $ anytime to save game'
-    loop do
+    loop do # rubocop:disable Metrics/BlockLength
       loop do
         player_move # @move
-        move_translate # @piece, @move_pos
+        if @move == '00' || @move == '000'
+          castle
+          # binding.pry
+        else
+          move_translate # @piece, @move_pos
 
-        @previous_piece_positions = Marshal.load(Marshal.dump(@board.piece_positions)) # Deep copy
+          @previous_piece_positions = Marshal.load(Marshal.dump(@board.piece_positions)) # Deep copy
 
-        next unless valid_move && capture # Goes back to start of loop if either false
+          next unless valid_move && capture # Goes back to start of loop if either false
 
-        @board.board_update
+          @board.board_update
 
-        @board.update_piece_position
+          @board.update_piece_position
 
-        # Move into check
-        if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
+          # Move into check
+          if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
 
-          @board.piece_positions = @previous_piece_positions # Restore the previous state
+            @board.piece_positions = @previous_piece_positions # Restore the previous state
 
-          @board.board_revert
-          @check_white_king = false
-          @check_black_king = false
+            @board.board_revert
+            @check_white_king = false
+            @check_black_king = false
 
-          next
+            next
+          end
+          break
         end
-        break
+        @board.board_array = Array.new(8) { Array.new(8, ' ') } # Clears board_array so loaded pieces aren't loaded on top
+
+        @board.piece_put
+        # binding.pry
+        break if @castle == true
       end
       # binding.pry
-
+      # Sets to false if ever rook or king not on original square
       @white_castle_qside = false if @board.board_array[0][0] != '♖' || @board.board_array[0][4] != '♔'
       @white_castle_kside = false if @board.board_array[0][7] != '♖' || @board.board_array[0][4] != '♔'
       @black_castle_qside = false if @board.board_array[7][0] != '♜' || @board.board_array[7][4] != '♚'
@@ -263,7 +343,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
       @board.board_display
       @turn += 1
-      binding.pry
+      # binding.pry
     end
   end
 end

@@ -93,3 +93,6 @@ Castle
 Pawn Capture
 En passant
 Check mate
+
+3rd October
+black qside castle with collision finishing turn
