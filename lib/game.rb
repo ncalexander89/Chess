@@ -212,6 +212,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
   def castle # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     if @move == '00' && @white_castle_kside == true && @turn.odd?
+      # Checks for pieces blocking castling
       i = 5
       while i < 7
         if @board.board_array[0][i] != ' '
@@ -221,7 +222,21 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         i += 1
       end
-      # @board.piece_positions['♖'].delete([0, 7])
+      # King can't move through check
+      @board.piece_positions['♔'][0] = [0, 5]
+      if white_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
+      @board.piece_positions['♔'][0] = [0, 6]
+      if white_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
       @board.piece_positions['♖'][1] = [0, 5]
       @board.piece_positions['♔'][0] = [0, 6]
       @castle = true
@@ -236,10 +251,27 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         i += 1
       end
+      # King cant move through check
+      @board.piece_positions['♔'][0] = [0, 3]
+      if white_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
+      @board.piece_positions['♔'][0] = [0, 2]
+      if white_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
+      # binding.pry
       @board.piece_positions['♖'][0] = [0, 3]
       @board.piece_positions['♔'][0] = [0, 2]
       @castle = true
       return true
+
     elsif @move == '00' && @black_castle_kside == true && @turn.even?
       i = 5
       while i < 7
@@ -250,7 +282,21 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         i += 1
       end
-      # @board.piece_positions['♖'].delete([0, 7])
+      # King can't move through check
+      @board.piece_positions['♚'][0] = [0, 5]
+      if black_king_check?
+        @board.piece_positions['♚'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
+      @board.piece_positions['♚'][0] = [0, 6]
+      if black_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
       @board.piece_positions['♜'][1] = [7, 5]
       @board.piece_positions['♚'][0] = [7, 6]
       @castle = true
@@ -264,6 +310,21 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         end
 
         i += 1
+      end
+      # King can't move through check
+      @board.piece_positions['♚'][0] = [0, 3]
+      if black_king_check?
+        @board.piece_positions['♚'][0] = [0, 4]
+        @castle = false
+        return
+
+      end
+      @board.piece_positions['♚'][0] = [0, 2]
+      if black_king_check?
+        @board.piece_positions['♔'][0] = [0, 4]
+        @castle = false
+        return
+
       end
       @board.piece_positions['♜'][0] = [7, 3]
       @board.piece_positions['♚'][0] = [7, 2]

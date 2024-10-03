@@ -96,3 +96,13 @@ Check mate
 
 3rd October
 Can't castle moving through check
+
+QSIDE
+King moves [0, -1]
+White King Check
+King moves [0, -2]
+White King Check
+
+Black Knights puts white king in check
+Check no shown, Collision!
+White rook can still move while white king in check

@@ -39,8 +39,8 @@ class Board # rubocop:disable Style/Documentation
       '♞' => [[3, 5]], # Black knights
       '♔' => [[0, 4]],         # White king
       '♚' => [[7, 4]],         # Black king
-      '♕' => [[1, 4]],         # White queen
-      '♛' => [[7, 3]]          # Black queen
+      '♕' => [[1, 5]],         # White queen
+      '♛' => [[7, 2]]          # Black queen
     }
     piece_put
   end
