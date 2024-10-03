@@ -106,3 +106,5 @@ White King Check
 Black Knights puts white king in check
 Check no shown, Collision!
 White rook can still move while white king in check
+
+Seems to be checking for knight collisions when checking king

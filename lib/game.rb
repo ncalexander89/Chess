@@ -109,8 +109,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # Stores the piece position in questions as @current_pos
         @current_pos = pos
         # Sends the @move_pos and @current_pos to check if collision
-        return true if no_collision?(@move_pos,
-                                     @current_pos) || (@move[0] == 'n' && (@board.board_array[@move_pos[0]][@move_pos[1]][0]) == ' ') # rubocop:disable Layout/LineLength
+        return true if (@move[0] == 'n' && (@board.board_array[@move_pos[0]][@move_pos[1]][0]) == ' ') || no_collision?(@move_pos, # rubocop:disable Layout/LineLength
+                                                                                                                        @current_pos) # rubocop:disable Layout/LineLength
       end
     end
     # If no pieces match the @move
@@ -169,7 +169,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       puts 'x needed to capture'
       return false
     end
-
+    binding.pry
+    # CHECK POSSIBLE IS TRUE WHEN GETTING SENT THROUGH SECOND TIME
     return true if @move[0] == 'n' && @check_possible == false
 
     # Number of steps in row and col
