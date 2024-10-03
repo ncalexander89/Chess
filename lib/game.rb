@@ -236,7 +236,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         i += 1
       end
-      # @board.piece_positions['♖'].delete([0, 7])
       @board.piece_positions['♖'][0] = [0, 3]
       @board.piece_positions['♔'][0] = [0, 2]
       @castle = true
@@ -266,7 +265,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
         i += 1
       end
-      # @board.piece_positions['♖'].delete([0, 7])
       @board.piece_positions['♜'][0] = [7, 3]
       @board.piece_positions['♚'][0] = [7, 2]
       @castle = true
@@ -332,7 +330,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
         # binding.pry
         break if @castle == true
       end
-      # binding.pry
       # Sets to false if ever rook or king not on original square
       @white_castle_qside = false if @board.board_array[0][0] != '♖' || @board.board_array[0][4] != '♔'
       @white_castle_kside = false if @board.board_array[0][7] != '♖' || @board.board_array[0][4] != '♔'
@@ -343,7 +340,6 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
 
       @board.board_display
       @turn += 1
-      # binding.pry
     end
   end
 end
