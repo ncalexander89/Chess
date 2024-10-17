@@ -107,4 +107,10 @@ Black Knights puts white king in check
 Check no shown, Collision!
 White rook can still move while white king in check
 
-Seems to be checking for knight collisions when checking king
+Seems to be checking for knight collisions (with rook) when checking king, king not in check
+
+if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
+
+return true if @move[0] == 'n' && @check_possible == false
+
+means 

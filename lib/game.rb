@@ -10,7 +10,7 @@ require 'yaml'
 
 class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
   attr_accessor :board, :turn, :move, :piece, :rules, :move_pos, :current_pos, :check_move, :check_black_king,
-                :check_white_king, :check_possible, :white_castle_kside, :white_castle_qside, :black_castle_qside, :black_castle_kside # rubocop:disable Layout/LineLength
+                :check_white_king, :white_check_possible, :black_check_possible, :white_castle_kside, :white_castle_qside, :black_castle_qside, :black_castle_kside # rubocop:disable Layout/LineLength
 
   def initialize # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     @board = Board.new(self)
@@ -24,7 +24,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     @check_move = nil
     @check_black_king = false
     @check_white_king = false
-    @check_possible = false
+    @white_check_possible = false
+    @black_check_possible = false
     @white_castle_qside = true
     @white_castle_kside = true
     @black_castle_qside = true
@@ -126,7 +127,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           @check_move = check_move # Store the value in an instance variable
           next unless check_move == @board.piece_positions['♚'][0]
 
-          @check_possible = true
+          @black_check_possible = true
+          # binding.pry
           next unless no_collision?(check_move, pos)
 
           @check_black_king = true
@@ -136,7 +138,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
     end
     @check_black_king = false
-    @check_possible = false
+    @black_check_possible = false
     false
   end
 
@@ -147,7 +149,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           check_move = [pos[0] + valid_move[0], pos[1] + valid_move[1]] # Final move position
           next unless check_move == @board.piece_positions['♔'][0]
 
-          @check_possible = true
+          @white_check_possible = true
           next unless no_collision?(check_move, pos)
 
           @check_white_king = true
@@ -157,7 +159,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       end
     end
     @check_white_king = false
-    @check_possible = false
+    @white_check_possible = false
     false
   end
 
@@ -165,13 +167,16 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     # 'Check' method calls collision so make sure if its a potential check that it doesnt pass through 'x need to capture'
     # If trying to move to a space that is taken and not a capture
     # THIS IS WHY QUEEN CAN CAPTURE KNIGHT WIHTOUT 'X'
-    if (@check_possible == false) && (!@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' ')
+    if (@white_check_possible == false && @black_check_possible == false) && (!@move.include?('x') && @board.board_array[@move_pos[0]][@move_pos[1]] != ' ')
       puts 'x needed to capture'
       return false
     end
-    binding.pry
     # CHECK POSSIBLE IS TRUE WHEN GETTING SENT THROUGH SECOND TIME
-    return true if @move[0] == 'n' && @check_possible == false
+    # Knight can move without collisions if not putting its king in check
+    return true if @move[0] == 'n' && @white_check_possible == false && @turn.odd?
+    return true if @move[0] == 'n' && @black_check_possible == false && @turn.even?
+
+    # return true if @move[0] == 'n' && @check_possible == true
 
     # Number of steps in row and col
     steps = [move_pos[0] - current_pos[0], move_pos[1] - current_pos[1]]
