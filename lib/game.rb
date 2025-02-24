@@ -153,6 +153,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           next unless no_collision?(check_move, pos)
 
           @check_white_king = true
+          # binding.pry
           puts 'Check White King!'
           return true
         end
@@ -173,8 +174,8 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     end
     # CHECK POSSIBLE IS TRUE WHEN GETTING SENT THROUGH SECOND TIME
     # Knight can move without collisions if not putting its king in check
-    return true if @move[0] == 'n' && @white_check_possible == false && @turn.odd?
-    return true if @move[0] == 'n' && @black_check_possible == false && @turn.even?
+    # return true if @move[0] == 'n' && @white_check_possible == false && @turn.odd?
+    # return true if @move[0] == 'n' && @black_check_possible == false && @turn.even?
 
     # return true if @move[0] == 'n' && @check_possible == true
 
@@ -183,7 +184,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
     row = 0
     col = 0
     loop do
-      # break if @move[0] == 'n'
+      break if @move[0] == 'n'
 
       row += 1 if row < steps[0]
       row -= 1 if row > steps[0]
@@ -204,7 +205,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       # Gets to end position without collision
       return true if row == steps[0] && col == steps[1] 
     end
-    true
+    return true
   end
 
   def capture # rubocop:disable Metrics/AbcSize
@@ -379,7 +380,9 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
           @board.update_piece_position
 
           # Move into check
+          # binding.pry
           if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
+            # binding.pry
 
             @board.piece_positions = @previous_piece_positions # Restore the previous state
 
@@ -406,6 +409,7 @@ class Game # rubocop:disable Style/Documentation,Metrics/ClassLength
       puts 'Check!' if white_king_check? || black_king_check?
 
       @board.board_display
+      # binding.pry
       @turn += 1
     end
   end

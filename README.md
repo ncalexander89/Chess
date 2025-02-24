@@ -112,5 +112,11 @@ Seems to be checking for knight collisions (with rook) when checking king, king 
 if (@turn.odd? && white_king_check?) || (@turn.even? && black_king_check?)
 
 return true if @move[0] == 'n' && @check_possible == false
-
 means 
+
+
+
+WHY CANT WHITE MOVE WHEN KNIGHT IS PUTTING KING INTO CHECK WITH COLLISION??
+
+WHEN WHITE ROOK ATTEMPTS TO TAKE PIECE WHILE IN CHECK IT SAY 'CHECK WHITE KING'
+WHEN VALID MOVE IS PLAYED, PIECE ATTEMPTED TO TAKE DISAPPEARS
